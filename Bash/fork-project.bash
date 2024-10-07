@@ -1,11 +1,7 @@
-https://github.com/Leerlandais/source_code.git
-
-
 read -p "Copy the URL of YOUR fork here: " FORK_DIR
 PROJ_NAME=$(basename "$FORK_DIR" .git)
 echo 'The project will be called:' $PROJ_NAME && \
 read -p "Enter the database name: " DB_NAME
-
 
 echo 'Cloning the repository' && \
 git clone "$FORK_DIR" && \

@@ -117,19 +117,45 @@ pnpm-debug.log*
 
         // create the config
         const cfgFile = `
-            <?php
-            const PROJECT_DIRECTORY = __DIR__;
-            const PUB_DIR = __DIR__ . '/public/';
+<?php
+const PROJECT_DIRECTORY = __DIR__;
+const PUB_DIR = __DIR__ . '/public/';
             `;
         fs.writeFileSync(`${projName}/config.php`, cfgFile);
+
         // and routeCont
+        const rteCont = `
+<?php
+require_once PROJECT_DIRECTORY."/controller/publicController.php";
+            `;
+        fs.writeFileSync(`${projName}/controller/routerController.php`, rteCont);
+
 
         // and pubCount....
+        const pubCont = `
+<?php
+$route = $_GET['route'] ?? 'home';
+switch ($route) {
+  case 'home':
+    echo $twig->render("public/public.index.html.twig");
+    break;
+
+  default:
+    echo $twig->render("err404.html.twig");
+}
+            `;
+        fs.writeFileSync(`${projName}/controller/publicController.php`, pubCont);
 
         // ...base.twig
-
+        const baseTwig = `
+{# The Base Twig #}        
+        `;
+        fs.writeFileSync(`${projName}/view/base.html.twig`, baseTwig);
         // template.twig
-
+        const tempTwig = `
+{% extends 'base.twig.html' %}   
+        `;
+        fs.writeFileSync(`${projName}/view/template.html.twig`, tempTwig);
         // homepage.twig
 
         // and the big index
@@ -142,3 +168,4 @@ pnpm-debug.log*
     });
 
 
+// pkg Source/twig-maker.js --targets node18-win-x64 --output test.exe

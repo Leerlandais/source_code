@@ -154,13 +154,13 @@ switch ($route) {
 
         // template.twig
         const tempTwig = `
-{% extends 'base.twig.html' %}   
+{% extends 'base.html.twig' %}   
         `;
         fs.writeFileSync(`${projName}/view/template.html.twig`, tempTwig);
 
         // homepage.twig
         const homeTwig = `
-{% extends 'template.twig.html' %}   
+{% extends 'template.html.twig' %}   
         `;
         fs.writeFileSync(`${projName}/view/public/public.index.html.twig`, homeTwig);
 
@@ -217,8 +217,10 @@ require_once PROJECT_DIRECTORY.'/controller/routerController.php';
 // $db = null;   
         `;
         fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
-        // run composer (make sure I'm in the folder)
 
+        // run composer (make sure I'm in the folder)
+        process.chdir(`${projName}`);
+        execSync(`composer require "twig/twig:^3.0"`, { stdio: 'inherit' });
         // add git and create the glory commit
 
         rl.close();

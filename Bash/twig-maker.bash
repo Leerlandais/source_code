@@ -104,6 +104,23 @@ cat <<EOC > "$BASE_DIR/config.php"
 const PROJECT_DIRECTORY = __DIR__;
 const PUB_DIR = __DIR__ . '/public/';
 EOC
+cat <<EOR > "$BASE_DIR/controller/routerController.php"
+<?php
+require_once PROJECT_DIRECTORY."/controller/publicController.php";
+EOR
+cat <<'EOP' > "$BASE_DIR/controller/publicController.php"
+<?php
+$route = $_GET['route'] ?? 'home';
+switch ($route) {
+  case 'home':
+    echo $twig->render("publicView/public.index.html.twig");
+    break;
+
+  default:
+    echo $twig->render("err404.html.twig");
+}
+EOP
+
 cd "$BASE_DIR" && \
 
 

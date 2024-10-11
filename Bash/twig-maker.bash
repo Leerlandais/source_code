@@ -138,9 +138,63 @@ EOTEMP
 cat <<'EOHOME' > "$BASE_DIR/view/public/public.index.html.twig"
 {% extends 'template.html.twig' %}
 EOHOME
+
+# Create the really large index.php to take care of loading Twig etc
+cat <<'EOINDEX' > "$BASE_DIR/public/index.php"
+<?php
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
+
+require_once "../config.php";
+
+spl_autoload_register(function ($class) {
+  $class = str_replace('\\', '/', $class);
+  require PROJECT_DIRECTORY.'/' .$class . '.php';
+});
+
+require_once PROJECT_DIRECTORY.'/vendor/autoload.php';
+
+$loader = new FilesystemLoader(PROJECT_DIRECTORY.'/view/');
+
+// Dev version
+$twig = new Environment($loader, [
+  'debug' => true,
+]);
+$twig->addExtension(new \Twig\Extension\DebugExtension());
+
+$twig->addGlobal('PUBLIC_DIR', PUB_DIR);
+$twig->addGlobal('PROJECT_DIR', PROJECT_DIRECTORY);
+
+/*
+// Prod version
+$twig = new Environment($loader, [
+   'cache' => '../cache/Twig',
+   'debug' => false,
+]);
+// no DebugExtension online
+*/
+
+
+/* NO DB FOR THIS PROJECT (AT THE CURRENT TIME)
+try {
+   $db = MyPDO::getInstance(DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME . ";port=" . DB_PORT . ";charset=" . DB_CHARSET,
+       DB_LOGIN,
+       DB_PWD);
+   $db->setAttribute(MyPDO::ATTR_ERRMODE, MyPDO::ERRMODE_EXCEPTION);
+   $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+}catch (Exception $e){
+   die($e->getMessage());
+}
+
+*/
+require_once PROJECT_DIRECTORY.'/controller/routerController.php';
+
+// $db = null;
+EOINDEX
+
 cd "$BASE_DIR" && \
 
-
+composer require "twig/twig:^3.0"
 
 git init && \
 git branch -m main && \

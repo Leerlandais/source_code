@@ -51,7 +51,7 @@ create_readme "$BASE_DIR/controller" \
 
 
 # Create the .gitignore
-cat <<EOF > "$BASE_DIR/.gitignore"
+cat <<EOGIT > "$BASE_DIR/.gitignore"
     .idea/
 .vscode/
 *.suo
@@ -98,17 +98,17 @@ pnpm-debug.log*
 .yarn/
 /bin/
 /public/bundles/
-EOF
-cat <<EOC > "$BASE_DIR/config.php"
+EOGIT
+cat <<EOCON > "$BASE_DIR/config.php"
 <?php
 const PROJECT_DIRECTORY = __DIR__;
 const PUB_DIR = __DIR__ . '/public/';
-EOC
-cat <<EOR > "$BASE_DIR/controller/routerController.php"
+EOCON
+cat <<EORTE > "$BASE_DIR/controller/routerController.php"
 <?php
 require_once PROJECT_DIRECTORY."/controller/publicController.php";
-EOR
-cat <<'EOP' > "$BASE_DIR/controller/publicController.php"
+EORTE
+cat <<'EOPUB' > "$BASE_DIR/controller/publicController.php"
 <?php
 $route = $_GET['route'] ?? 'home';
 switch ($route) {
@@ -119,8 +119,13 @@ switch ($route) {
   default:
     echo $twig->render("err404.html.twig");
 }
-EOP
-
+EOPUB
+cat <<'EOBASE' > "$BASE_DIR/view/base.html.twig"
+{# The Base Twig #}
+EOBASE
+cat <<'EOTEMP' > "$BASE_DIR/view/template.html.twig"
+{% extends 'base.html.twig' %}
+EOTEMP
 cd "$BASE_DIR" && \
 
 

@@ -38,16 +38,13 @@ create_readme() {
 }
 
 # Call the function for all created folders
-create_readme "$BASE_DIR/controller" \
-              "$BASE_DIR/data" \
+create_readme "$BASE_DIR/data" \
               "$BASE_DIR/model" \
               "$BASE_DIR/public" \
               "$BASE_DIR/public/images" \
               "$BASE_DIR/public/scripts" \
               "$BASE_DIR/public/styles" \
-              "$BASE_DIR/view" \
-              "$BASE_DIR/view/private" \
-              "$BASE_DIR/view/public"
+              "$BASE_DIR/view/private"
 
 
 # Create the .gitignore
@@ -99,33 +96,48 @@ pnpm-debug.log*
 /bin/
 /public/bundles/
 EOGIT
+
+# Create the config file
 cat <<EOCON > "$BASE_DIR/config.php"
 <?php
 const PROJECT_DIRECTORY = __DIR__;
 const PUB_DIR = __DIR__ . '/public/';
 EOCON
+
+# Create the routeCont - not really necessary but included to allow easier expansion
 cat <<EORTE > "$BASE_DIR/controller/routerController.php"
 <?php
 require_once PROJECT_DIRECTORY."/controller/publicController.php";
 EORTE
+
+# Create the pubCont
 cat <<'EOPUB' > "$BASE_DIR/controller/publicController.php"
 <?php
 $route = $_GET['route'] ?? 'home';
 switch ($route) {
   case 'home':
-    echo $twig->render("publicView/public.index.html.twig");
+    echo $twig->render("public/public.index.html.twig");
     break;
 
   default:
     echo $twig->render("err404.html.twig");
 }
 EOPUB
+
+# Create an empty base.twig (comment just to add a placeholder)
 cat <<'EOBASE' > "$BASE_DIR/view/base.html.twig"
 {# The Base Twig #}
 EOBASE
+
+# Create the template and add the extend from base.twig
 cat <<'EOTEMP' > "$BASE_DIR/view/template.html.twig"
 {% extends 'base.html.twig' %}
 EOTEMP
+
+# Create the homepageTwig in the public folder and add the extend from template.twig
+cat <<'EOHOME' > "$BASE_DIR/view/public/public.index.html.twig"
+{% extends 'template.html.twig' %}
+EOHOME
 cd "$BASE_DIR" && \
 
 

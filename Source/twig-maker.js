@@ -116,7 +116,12 @@ pnpm-debug.log*
         }
 
         // create the config
-
+        const cfgFile = `
+            <?php
+            const PROJECT_DIRECTORY = __DIR__;
+            const PUB_DIR = __DIR__ . '/public/';
+            `;
+        fs.writeFileSync(`${projName}/config.php`, cfgFile);
         // and routeCont
 
         // and pubCount....

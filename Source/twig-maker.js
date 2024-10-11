@@ -115,6 +115,24 @@ pnpm-debug.log*
             console.error(`Error occurred: ${error.message}`);
         }
 
+        // create the config
+
+        // and routeCont
+
+        // and pubCount....
+
+        // ...base.twig
+
+        // template.twig
+
+        // homepage.twig
+
+        // and the big index
+
+        // run composer (make sure I'm in the folder)
+
+        // add git and create the glory commit
+
         rl.close();
     });
 

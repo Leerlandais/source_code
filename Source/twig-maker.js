@@ -147,20 +147,18 @@ switch ($route) {
         fs.writeFileSync(`${projName}/controller/publicController.php`, pubCont);
 
         // ...base.twig
-        const baseTwig = `
-{# The Base Twig #}        
+        const baseTwig = `{# The Base Twig #}
+        <h1>If you can see this, all is good</h1>
         `;
         fs.writeFileSync(`${projName}/view/base.html.twig`, baseTwig);
 
         // template.twig
-        const tempTwig = `
-{% extends 'base.html.twig' %}   
+        const tempTwig = `{% extends 'base.html.twig' %}   
         `;
         fs.writeFileSync(`${projName}/view/template.html.twig`, tempTwig);
 
         // homepage.twig
-        const homeTwig = `
-{% extends 'template.html.twig' %}   
+        const homeTwig = `{% extends 'template.html.twig' %}   
         `;
         fs.writeFileSync(`${projName}/view/public/public.index.html.twig`, homeTwig);
 

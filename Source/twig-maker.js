@@ -222,6 +222,11 @@ require_once PROJECT_DIRECTORY.'/controller/routerController.php';
         process.chdir(`${projName}`);
         execSync(`composer require "twig/twig:^3.0"`, { stdio: 'inherit' });
         // add git and create the glory commit
+        execSync(`git init`, { stdio: 'inherit' });
+        execSync(`git branch -m main`, { stdio: 'inherit' });
+        execSync(`git add .`, { stdio: 'inherit' });
+        execSync(`git commit -m "Setup completed by Leerlandais"`, { stdio: 'inherit' });
+
 
         rl.close();
     });

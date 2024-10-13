@@ -9,7 +9,7 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-rl.question("What would you like to do?\n1. Setup a forked project\n2. Create a React/TW project\n3. Create a React/BS project\n4. Create a Node project\n5. Create a Node with DB\n6. Create an empty MVC\n7. Set up a Twig Project", (choice) => {
+rl.question("What would you like to do?\n1. Setup a forked project\n2. Create a React/TW project\n3. Create a React/BS project\n4. Create a Node project\n5. Create a Node with DB\n6. Create an empty MVC\n7. Set up a Twig Project\n", (choice) => {
     if (choice === '1') {
         setupForkedProject();
     } else if (choice === '2') {
@@ -535,6 +535,7 @@ switch ($route) {
         // ...base.twig
         const baseTwig = `
 {# The Base Twig #}        
+<h1>If you can see this, all is good</h1>
         `;
         fs.writeFileSync(`${projName}/view/base.html.twig`, baseTwig);
 
@@ -606,13 +607,12 @@ require_once PROJECT_DIRECTORY.'/controller/routerController.php';
 
         // run composer (make sure I'm in the folder)
         process.chdir(`${projName}`);
-        execSync(`composer require "twig/twig:^3.0"`, { stdio: 'inherit' });
+        execSync(`composer require "twig/twig:^3.0"`, {stdio: 'inherit'});
         // add git and create the glory commit
-        execSync(`git init`, { stdio: 'inherit' });
-        execSync(`git branch -m main`, { stdio: 'inherit' });
-        execSync(`git add .`, { stdio: 'inherit' });
-        execSync(`git commit -m "Setup completed by Leerlandais"`, { stdio: 'inherit' });
-
+        execSync(`git init`, {stdio: 'inherit'});
+        execSync(`git branch -m main`, {stdio: 'inherit'});
+        execSync(`git add .`, {stdio: 'inherit'});
+        execSync(`git commit -m "Setup completed by Leerlandais"`, {stdio: 'inherit'});
 
 
         rl.close();

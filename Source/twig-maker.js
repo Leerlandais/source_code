@@ -147,9 +147,41 @@ switch ($route) {
         fs.writeFileSync(`${projName}/controller/publicController.php`, pubCont);
 
         // ...base.twig
-        const baseTwig = `{# The Base Twig #}
-        <h1>If you can see this, all is good</h1>
-        `;
+        const baseTwig = `
+<\!DOCTYPE html>
+<html lang="{% block lang %}fr{% endblock %}">
+<head>
+    {% block head %}
+        {% block meta %}{% endblock %}
+        <title>{% block title %}Title{% endblock %}</title>
+        {% block stylesheet %}{% endblock %}
+    {% endblock %}
+</head>
+<body class={% block bodyClass %}{% endblock %}>{% block body %}
+
+{% block navBar %}
+    {% block connectBtn %} {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% block hero %}
+        {% block heroText %}{% endblock %}
+        {% block heroImg  %}{% endblock %}
+    {% endblock %}
+
+    {% block sectionOne %}{% endblock %} {# Change these names as needed #}
+    {% block sectionTwo %}{% endblock %}
+    {% block sectionThree %}{% endblock %}
+
+
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block javascript %}{% endblock %}
+
+</body> {% endblock %}
+</html>`;
         fs.writeFileSync(`${projName}/view/base.html.twig`, baseTwig);
 
         // template.twig

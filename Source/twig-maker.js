@@ -191,6 +191,7 @@ switch ($route) {
 
         // homepage.twig
         const homeTwig = `{% extends 'template.html.twig' %}   
+        {% block hero %}If you can see this, all is well{% endblock %}
         `;
         fs.writeFileSync(`${projName}/view/public/public.index.html.twig`, homeTwig);
 

@@ -534,9 +534,40 @@ switch ($route) {
 
         // ...base.twig
         const baseTwig = `
-{# The Base Twig #}        
-<h1>If you can see this, all is good</h1>
-        `;
+<\!DOCTYPE html>
+<html lang="{% block lang %}fr{% endblock %}">
+<head>
+    {% block head %}
+        {% block meta %}{% endblock %}
+        <title>{% block title %}Title{% endblock %}</title>
+        {% block stylesheet %}{% endblock %}
+    {% endblock %}
+</head>
+<body class={% block bodyClass %}{% endblock %}>{% block body %}
+
+{% block navBar %}
+    {% block connectBtn %} {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% block hero %}
+        {% block heroText %}{% endblock %}
+        {% block heroImg  %}{% endblock %}
+    {% endblock %}
+
+    {% block sectionOne %}{% endblock %} {# Change these names as needed #}
+    {% block sectionTwo %}{% endblock %}
+    {% block sectionThree %}{% endblock %}
+
+
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block javascript %}{% endblock %}
+
+</body> {% endblock %}
+</html>`;
         fs.writeFileSync(`${projName}/view/base.html.twig`, baseTwig);
 
         // template.twig
@@ -548,6 +579,7 @@ switch ($route) {
         // homepage.twig
         const homeTwig = `
 {% extends 'template.html.twig' %}   
+{% block hero %}If you can see this, all is good{% endblock %}
         `;
         fs.writeFileSync(`${projName}/view/public/public.index.html.twig`, homeTwig);
 
@@ -618,3 +650,6 @@ require_once PROJECT_DIRECTORY.'/controller/routerController.php';
         rl.close();
     });
 }
+
+
+// pkg Source/multiInstaller.js --targets node18-win-x64 --output multiInstaller.exe

@@ -194,7 +194,7 @@ function createNodeApp() {
 }
 
 function createNodeAppWithDB(){
-    rl.question("Enter the project name: ", function(projName) {
+    rl.question("Enter the project name: ", function(project_name) {
         rl.question("Enter the DB name: ", function(dbName) {
             const project_name = projName.toLowerCase();  // project_name, use this consistently
             try {

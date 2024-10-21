@@ -3,66 +3,70 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
+const completed = (msg) => {
+    console.log(msg);
+    rl.question('The process seems to have completed successfully - press Enter to close', () => {
+        rl.close();
+    });
+};
 
+rl.question("Enter the project name: ", function(projName) {
+    try {
+        // Create all directories under the project name
+        fs.mkdirSync(`${projName}`);
+        fs.mkdirSync(`${projName}/controller`);
+        fs.mkdirSync(`${projName}/data`);
+        fs.mkdirSync(`${projName}/model`);
+        fs.mkdirSync(`${projName}/public`);
+        fs.mkdirSync(`${projName}/view`);
+        fs.mkdirSync(`${projName}/public/images`);
+        fs.mkdirSync(`${projName}/public/scripts`);
+        fs.mkdirSync(`${projName}/public/styles`);
+        fs.mkdirSync(`${projName}/view/private`);
+        fs.mkdirSync(`${projName}/view/public`);
 
-    rl.question("Enter the project name: ", function(projName) {
-        try {
-            // Create all directories under the project name
-            fs.mkdirSync(`${projName}`);
-            fs.mkdirSync(`${projName}/controller`);
-            fs.mkdirSync(`${projName}/data`);
-            fs.mkdirSync(`${projName}/model`);
-            fs.mkdirSync(`${projName}/public`);
-            fs.mkdirSync(`${projName}/view`);
-            fs.mkdirSync(`${projName}/public/images`);
-            fs.mkdirSync(`${projName}/public/scripts`);
-            fs.mkdirSync(`${projName}/public/styles`);
-            fs.mkdirSync(`${projName}/view/private`);
-            fs.mkdirSync(`${projName}/view/public`);
+        function createReadmeInFolders(folders) {
+            folders.forEach(folder => {
+                try {
+                    if (fs.existsSync(folder) && fs.readdirSync(folder).length === 0) {
+                        const folderName = path.basename(folder);
+                        const readmeContent = `# Placeholder for ${folderName}`;
 
-            function createReadmeInFolders(folders) {
-                folders.forEach(folder => {
-                    try {
-                        if (fs.existsSync(folder) && fs.readdirSync(folder).length === 0) {
-                            const folderName = path.basename(folder);
-                            const readmeContent = `# Placeholder for ${folderName}`;
-
-                            fs.writeFileSync(path.join(folder, 'README.md'), readmeContent);
-                            console.log(`Created README.md in ${folder}`);
-                        }
-                    } catch (error) {
-                        console.error(`Error processing folder ${folder}: ${error.message}`);
+                        fs.writeFileSync(path.join(folder, 'README.md'), readmeContent);
+                        console.log(`Created README.md in ${folder}`);
                     }
-                });
-            }
+                } catch (error) {
+                    console.error(`Error processing folder ${folder}: ${error.message}`);
+                }
+            });
+        }
 
-            createReadmeInFolders([
-                `${projName}/controller`,
-                `${projName}/data`,
-                `${projName}/model`,
-                `${projName}/public`,
-                `${projName}/public/images`,
-                `${projName}/public/scripts`,
-                `${projName}/public/styles`,
-                `${projName}/view`,
-                `${projName}/view/private`,
-                `${projName}/view/public`
-            ]);
+        createReadmeInFolders([
+            `${projName}/controller`,
+            `${projName}/data`,
+            `${projName}/model`,
+            `${projName}/public`,
+            `${projName}/public/images`,
+            `${projName}/public/scripts`,
+            `${projName}/public/styles`,
+            `${projName}/view`,
+            `${projName}/view/private`,
+            `${projName}/view/public`
+        ]);
 
-            const extIndex = `
+        const extIndex = `
             <?php
             header("Location: public");
             die();
             `;
-            fs.writeFileSync(`${projName}/index.php`, extIndex);
+        fs.writeFileSync(`${projName}/index.php`, extIndex);
 
-            const gitIgnore = `
+        const gitIgnore = `
 .idea/
 .vscode/
 *.suo
@@ -110,29 +114,29 @@ pnpm-debug.log*
 /bin/
 /public/bundles/
 `;
-            fs.writeFileSync(`${projName}/.gitignore`, gitIgnore);
-        } catch (error) {
-            console.error(`Error occurred: ${error.message}`);
-        }
+        fs.writeFileSync(`${projName}/.gitignore`, gitIgnore);
+    } catch (error) {
+        console.error(`Error occurred: ${error.message}`);
+    }
 
-        // create the config
-        const cfgFile = `
+    // create the config
+    const cfgFile = `
 <?php
 const PROJECT_DIRECTORY = __DIR__;
 const PUB_DIR = __DIR__ . '/public/';
             `;
-        fs.writeFileSync(`${projName}/config.php`, cfgFile);
+    fs.writeFileSync(`${projName}/config.php`, cfgFile);
 
-        // and routeCont
-        const rteCont = `
+    // and routeCont
+    const rteCont = `
 <?php
 require_once PROJECT_DIRECTORY."/controller/publicController.php";
             `;
-        fs.writeFileSync(`${projName}/controller/routerController.php`, rteCont);
+    fs.writeFileSync(`${projName}/controller/routerController.php`, rteCont);
 
 
-        // and pubCount....
-        const pubCont = `
+    // and pubCount....
+    const pubCont = `
 <?php
 $route = $_GET['route'] ?? 'home';
 switch ($route) {
@@ -144,10 +148,10 @@ switch ($route) {
     echo $twig->render("err404.html.twig");
 }
             `;
-        fs.writeFileSync(`${projName}/controller/publicController.php`, pubCont);
+    fs.writeFileSync(`${projName}/controller/publicController.php`, pubCont);
 
-        // ...base.twig
-        const baseTwig = `
+    // ...base.twig
+    const baseTwig = `
 <\!DOCTYPE html>
 <html lang="{% block lang %}fr{% endblock %}">
 <head>
@@ -182,21 +186,23 @@ switch ($route) {
 
 </body> {% endblock %}
 </html>`;
-        fs.writeFileSync(`${projName}/view/base.html.twig`, baseTwig);
+    fs.writeFileSync(`${projName}/view/base.html.twig`, baseTwig);
 
-        // template.twig
-        const tempTwig = `{% extends 'base.html.twig' %}   
+    // template.twig
+    const tempTwig = `
+{% extends 'base.html.twig' %}   
         `;
-        fs.writeFileSync(`${projName}/view/template.html.twig`, tempTwig);
+    fs.writeFileSync(`${projName}/view/template.html.twig`, tempTwig);
 
-        // homepage.twig
-        const homeTwig = `{% extends 'template.html.twig' %}   
-        {% block hero %}If you can see this, all is well{% endblock %}
+    // homepage.twig
+    const homeTwig = `
+{% extends 'template.html.twig' %}   
+{% block hero %}If you can see this, all is good{% endblock %}
         `;
-        fs.writeFileSync(`${projName}/view/public/public.index.html.twig`, homeTwig);
+    fs.writeFileSync(`${projName}/view/public/public.index.html.twig`, homeTwig);
 
-        // and the big index
-        const pubIndex = `
+    // and the big index
+    const pubIndex = `
 <?php
 use Twig\\Loader\\FilesystemLoader;
 use Twig\\Environment;
@@ -247,20 +253,21 @@ require_once PROJECT_DIRECTORY.'/controller/routerController.php';
 
 // $db = null;   
         `;
-        fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
+    fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
 
-        // run composer (make sure I'm in the folder)
-        process.chdir(`${projName}`);
-        execSync(`composer require "twig/twig:^3.0"`, { stdio: 'inherit' });
-        // add git and create the glory commit
-        execSync(`git init`, { stdio: 'inherit' });
-        execSync(`git branch -m main`, { stdio: 'inherit' });
-        execSync(`git add .`, { stdio: 'inherit' });
-        execSync(`git commit -m "Setup completed by Leerlandais"`, { stdio: 'inherit' });
+    // run composer (make sure I'm in the folder)
+    process.chdir(`${projName}`);
+    execSync(`composer require "twig/twig:^3.0"`, {stdio: 'inherit'});
+    // add git and create the glory commit
+    execSync(`git init`, {stdio: 'inherit'});
+    execSync(`git branch -m main`, {stdio: 'inherit'});
+    execSync(`git add .`, {stdio: 'inherit'});
+    execSync(`git commit -m "Setup completed by Leerlandais"`, {stdio: 'inherit'});
 
-
-        rl.close();
-    });
+    completed("Setup completed successfully!");
 
 
-// pkg Source/twig-maker.js --targets node18-win-x64 --output test.exe
+});
+
+
+// pkg Source/twig-maker.js --targets node18-win-x64 --output twigMaker.exe

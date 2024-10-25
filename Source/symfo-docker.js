@@ -14,11 +14,21 @@ const completed = (msg) => {
         rl.close();
     });
 };
-rl.question("Enter the project name: ", function(projName) {
-    rl.question("Enter the database name (DB_NAME): ", function(dbName) {
-        rl.question("Enter the nginx port (e.g. 8080:80): ", function(ngPort) {
-            rl.question("Enter the mysql port (e.g. 3308:3306): ", function(myPort) {
-                rl.question("Enter the phpmyadmin port (e.g. 8081:80): ", function(phpPort) {
+rl.question("Enter the project name: ", function(proj) {
+    const projName = proj || "test";
+        console.log(`Project name is: ${projName}`);
+    rl.question("Enter the database name: ", function(db) {
+        const dbName = db || "db_default";
+            console.log(`Database name is: ${dbName}`);
+        rl.question("Enter the nginx port (8080:80): ", function(ng) {
+            const ngPort = ng || "8080:80";
+                console.log(`nginx port is: ${ngPort}`);
+            rl.question("Enter the mysql port (3308:3306): ", function(my) {
+                const myPort = my || "3308:3306";
+                    console.log(`mysql port is: ${myPort}`);
+                rl.question("Enter the phpmyadmin port (8081:80): ", function(php) {
+                    const phpPort = php || "8081:80";
+                        console.log(`phpmyadmin port is: ${phpPort}`);
         try {
 
 
@@ -34,3 +44,4 @@ rl.question("Enter the project name: ", function(projName) {
 }); // end proj_name question
 
 // pkg Source/symfo-docker.js --targets node18-win-x64 --output symfoDocker.exe
+

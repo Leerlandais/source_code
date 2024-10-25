@@ -69,7 +69,33 @@ RUN docker-php-ext-install opcache \\
 
             console.log('Dockerfile creation complete');
 
+            console.log('Beginning creation of nginx file');
+            fs.mkdirSync('nginx');
+            process.chdir('nginx');
+            const ngFile = `server {
+    listen 80;
+    server_name localhost;
 
+    root /var/www/html/public;
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri /index.php$is_args$args;
+    }
+
+    location ~ \\.php$ {
+        # include snippets/fastcgi-php.conf;
+        fastcgi_pass php:9000;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\\.ht {
+        deny all;
+    }
+}`
+        fs.writeFileSync(`default.conf`, ngFile);
+        console.log("nginx folder and default.conf created")
         } catch (error) {
             console.error(`Error occurred: ${error.message}`);
         }

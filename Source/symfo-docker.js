@@ -96,6 +96,69 @@ RUN docker-php-ext-install opcache \\
 }`
         fs.writeFileSync(`default.conf`, ngFile);
         console.log("nginx folder and default.conf created")
+            process.chdir('..');
+
+        console.log("Creating docker-compose");
+        const dockComp = `
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www/html
+
+    networks:
+      - symfony-network
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "${ngPort}"
+    networks:
+      - symfony-network
+    depends_on:
+      - php
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: \${MYSQL_ROOT}
+      MYSQL_DATABASE: \${MYSQL_DB}
+      MYSQL_USER: \${MYSQL_USER}
+      MYSQL_PASSWORD: \${MYSQL_PASS}
+    ports:
+      - "${myPort}"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - symfony-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: \${PMA_HOST}
+      MYSQL_USER: \${PMA_USER}
+      MYSQL_PASSWORD: \${PMA_PASS}
+    ports:
+      - "${phpPort}"
+    networks:
+      - symfony-network
+
+volumes:
+  mysql-data:
+
+networks:
+  symfony-network:
+
+`
+        fs.writeFileSync('docker-compose.yaml', dockComp);
+        console.log('Docker-compose.yaml created');
+
+
         } catch (error) {
             console.error(`Error occurred: ${error.message}`);
         }

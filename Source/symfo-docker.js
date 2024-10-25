@@ -15,10 +15,10 @@ const completed = (msg) => {
     });
 };
 rl.question("Enter the project name: ", function(proj) {
-    const projName = proj || "test";
+    const projName = proj || "symfony";
         console.log(`Project name is: ${projName}`);
     rl.question("Enter the database name: ", function(db) {
-        const dbName = db || "db_default";
+        const dbName = db || "symfony";
             console.log(`Database name is: ${dbName}`);
         rl.question("Enter the nginx port (8080:80): ", function(ng) {
             const ngPort = ng || "8080:80";
@@ -29,6 +29,11 @@ rl.question("Enter the project name: ", function(proj) {
                 rl.question("Enter the phpmyadmin port (8081:80): ", function(php) {
                     const phpPort = php || "8081:80";
                         console.log(`phpmyadmin port is: ${phpPort}`);
+                    rl.question("Enter Git Repository URL to automatically create remote address (default: no) ", function(git) {
+                        const gitRep = git || false;
+                        if(gitRep) {
+                            console.log(`Project will be pushed to: ${gitRep}`);
+                        }
         try {
             console.log("Creating Symfony Webapp");
             execSync(`symfony new ${projName} --version=lts --webapp`, { stdio: 'inherit' });
@@ -117,7 +122,7 @@ services:
       - ./:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - "${ngPort}"
+      - "8080:80"
     networks:
       - symfony-network
     depends_on:
@@ -126,12 +131,12 @@ services:
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: \${MYSQL_ROOT}
-      MYSQL_DATABASE: \${MYSQL_DB}
-      MYSQL_USER: \${MYSQL_USER}
-      MYSQL_PASSWORD: \${MYSQL_PASS}
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: symfony
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
     ports:
-      - "${myPort}"
+      - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -140,11 +145,11 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     environment:
-      PMA_HOST: \${PMA_HOST}
-      MYSQL_USER: \${PMA_USER}
-      MYSQL_PASSWORD: \${PMA_PASS}
+      PMA_HOST: mysql
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
     ports:
-      - "${phpPort}"
+      - "8081:80"
     networks:
       - symfony-network
 
@@ -153,6 +158,7 @@ volumes:
 
 networks:
   symfony-network:
+
 
 `
         fs.writeFileSync('docker-compose.yaml', dockComp);
@@ -177,25 +183,15 @@ networks:
 
 ###> symfony/framework-bundle ###
 APP_ENV=dev
-APP_SECRET=bc3780d7ccd2ca2ec0d4d62624afb762
+APP_SECRET=6639ee7c63b4c0ccbacb295990261ac3
 ###< symfony/framework-bundle ###
-
-### MY DOCKER CONSTS ###
-### C'EST ICI POUR CHANGER LES MOTS DE PASSE ETC ###
-MYSQL_ROOT=root
-MYSQL_DB=symfony
-MYSQL_USER=user
-MYSQL_PASS=password
-PMA_HOST=mysql
-PMA_USER=user
-PMA_PASS=password
 
 ###> doctrine/doctrine-bundle ###
 # Format described at https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url
 # IMPORTANT: You MUST configure your server version, either here or in config/packages/doctrine.yaml
 #
 # DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
-DATABASE_URL="mysql://user:password@127.0.0.1:3306/${dbName}?serverVersion=8.0.32&charset=utf8mb4"
+DATABASE_URL="mysql://user:password@mysql:3306/symfony?serverVersion=8.0.39&charset=utf8mb4"
 # DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=10.11.2-MariaDB&charset=utf8mb4"
 # DATABASE_URL="postgresql://app:!ChangeMe!@127.0.0.1:5432/app?serverVersion=16&charset=utf8"
 ###< doctrine/doctrine-bundle ###
@@ -209,28 +205,34 @@ MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
 
 ###> symfony/mailer ###
 # MAILER_DSN=null://null
-###< symfony/mailer ###
-`
+###< symfony/mailer ###`
             fs.writeFileSync('.env', env);
         console.log("env file created");
-        execSync('git branch -m main')
-    //    execSync('docker-compose up -d');
+
+        execSync('git branch -m main');
+        execSync('git add .');
+        execSync('git commit -m "project setup automated by https://leerlandais.com"');
+
+            console.log("deleting unnecessary files");
+
+            fs.unlink('compose.yaml', (err) => {
+                if (err) throw err;
+            });
+            fs.unlink('compose.override.yaml', (err) => {
+                if (err) throw err;
+            });
+
+        if(gitRep) {
+            execSync(`git remote add origin ${gitRep}`, {stdio : "inherit"});
+            execSync('git push -u origin main', {stdio : "inherit"});
+        }
+
+        completed("Setup completed successfully!");
 
         } catch (error) {
             console.error(`Error occurred: ${error.message}`);
         }
-
-
-                    fs.unlink('compose.override.yaml', (err) => {
-                        if (err) throw err;
-                        console.log('File deleted');
-                    });
-                    fs.unlink('compose.yaml', (err) => {
-                        if (err) throw err;
-                        console.log('File deleted');
-                    });
-
-        completed("Setup completed successfully!");
+                    }); // end git question
                 }); // end phpmyadmin question
             }); // end mysql question
         }); // end nginx question

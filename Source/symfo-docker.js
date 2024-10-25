@@ -31,8 +31,8 @@ rl.question("Enter the project name: ", function(proj) {
                         console.log(`phpmyadmin port is: ${phpPort}`);
         try {
             console.log("Creating Symfony Webapp");
-            // execSync(`symfony create --webapp ${projName}`, { stdio: 'inherit' });
-            // process.chdir(`${projName}`);
+            execSync(`symfony new ${projName} --version=lts --webapp`, { stdio: 'inherit' });
+            process.chdir(`${projName}`);
 
             console.log("Creating Dockerfile");
             const dockFile = `FROM php:8.2-fpm
@@ -213,10 +213,22 @@ MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
 `
             fs.writeFileSync('.env', env);
         console.log("env file created");
+        execSync('git branch -m main')
+    //    execSync('docker-compose up -d');
 
         } catch (error) {
             console.error(`Error occurred: ${error.message}`);
         }
+
+
+                    fs.unlink('compose.override.yaml', (err) => {
+                        if (err) throw err;
+                        console.log('File deleted');
+                    });
+                    fs.unlink('compose.yaml', (err) => {
+                        if (err) throw err;
+                        console.log('File deleted');
+                    });
 
         completed("Setup completed successfully!");
                 }); // end phpmyadmin question

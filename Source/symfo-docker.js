@@ -38,12 +38,13 @@ rl.question("Enter the project name: ", function(proj) {
             console.log("Creating Symfony Webapp");
             execSync(`symfony new ${projName} --version=lts --webapp`, { stdio: 'inherit' });
             process.chdir(`${projName}`);
+            execSync('symfony server:ca:install')
 
             console.log("Creating Dockerfile");
             const dockFile = `FROM php:8.2-fpm
 
 # Installer les extensions PDO et MySQL
-RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-install pdo pdo_mysql && docker-php-ext-enable pdo pdo_mysql
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -122,7 +123,7 @@ services:
       - ./:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - "8080:80"
+      - "${ngPort}"
     networks:
       - symfony-network
     depends_on:
@@ -132,11 +133,11 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: symfony
+      MYSQL_DATABASE: ${dbName}
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "${myPort}"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -149,7 +150,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "8081:80"
+      - "${phpPort}"
     networks:
       - symfony-network
 
@@ -191,7 +192,7 @@ APP_SECRET=6639ee7c63b4c0ccbacb295990261ac3
 # IMPORTANT: You MUST configure your server version, either here or in config/packages/doctrine.yaml
 #
 # DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
-DATABASE_URL="mysql://user:password@mysql:3306/symfony?serverVersion=8.0.39&charset=utf8mb4"
+DATABASE_URL="mysql://user:password@mysql:3306/${dbName}"
 # DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=10.11.2-MariaDB&charset=utf8mb4"
 # DATABASE_URL="postgresql://app:!ChangeMe!@127.0.0.1:5432/app?serverVersion=16&charset=utf8"
 ###< doctrine/doctrine-bundle ###

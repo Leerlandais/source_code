@@ -132,10 +132,10 @@ services:
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ${dbName}
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: \${MYSQL_ROOT}
+      MYSQL_DATABASE: \${MYSQL_DB}
+      MYSQL_USER: \${MYSQL_USER}
+      MYSQL_PASSWORD: \${MYSQL_PASS}
     ports:
       - "${myPort}"
     volumes:
@@ -146,9 +146,9 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     environment:
-      PMA_HOST: mysql
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      PMA_HOST: \${PMA_HOST}
+      MYSQL_USER: \${PMA_USER}
+      MYSQL_PASSWORD: \${PMA_PASS}
     ports:
       - "${phpPort}"
     networks:
@@ -186,6 +186,14 @@ networks:
 APP_ENV=dev
 APP_SECRET=6639ee7c63b4c0ccbacb295990261ac3
 ###< symfony/framework-bundle ###
+
+MYSQL_ROOT=root
+MYSQL_DB=${dbName}
+MYSQL_USER=user
+MYSQL_PASS=password
+PMA_HOST=mysql
+PMA_USER=user
+PMA_PASS=password
 
 ###> doctrine/doctrine-bundle ###
 # Format described at https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url

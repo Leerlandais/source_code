@@ -133,7 +133,7 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: symfony
+      MYSQL_DATABASE: ${dbName}
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
@@ -192,7 +192,7 @@ APP_SECRET=6639ee7c63b4c0ccbacb295990261ac3
 # IMPORTANT: You MUST configure your server version, either here or in config/packages/doctrine.yaml
 #
 # DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
-DATABASE_URL="mysql://user:password@mysql:3306/symfony"
+DATABASE_URL="mysql://user:password@mysql:3306/${dbName}"
 # DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=10.11.2-MariaDB&charset=utf8mb4"
 # DATABASE_URL="postgresql://app:!ChangeMe!@127.0.0.1:5432/app?serverVersion=16&charset=utf8"
 ###< doctrine/doctrine-bundle ###

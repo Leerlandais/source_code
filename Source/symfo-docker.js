@@ -123,7 +123,7 @@ services:
       - ./:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - "8080:80"
+      - "${ngPort}"
     networks:
       - symfony-network
     depends_on:
@@ -137,7 +137,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "3308:3306"
+      - "${myPort}"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -150,7 +150,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "8082:80"
+      - "${phpPort}"
     networks:
       - symfony-network
 

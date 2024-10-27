@@ -55,8 +55,11 @@ RUN pecl install apcu && docker-php-ext-enable apcu
 # Installer Xdebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
-# Install Git
+# Install Git cos I'm an addict and can't be anywhere without it
 RUN apt-get update && apt-get install -y git
+
+# Created .bashrc to set up an alias for php bin/yadayada (I'm sick of typing that :-D)
+RUN echo "alias lee='php bin/console'" >> /root/.bashrc
 
 # Configurer Xdebug
 RUN echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \\

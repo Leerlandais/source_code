@@ -60,6 +60,7 @@ RUN apt-get update && apt-get install -y git
 
 # Created .bashrc to set up an alias for php bin/yadayada (I'm sick of typing that :-D)
 RUN echo "alias lee='php bin/console'" >> /root/.bashrc
+RUN echo "alias cr='composer require'" >> /root/.bashrc
 
 # Configurer Xdebug
 RUN echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \\
@@ -206,7 +207,7 @@ PMA_PASS=password
 # IMPORTANT: You MUST configure your server version, either here or in config/packages/doctrine.yaml
 #
 # DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
-DATABASE_URL="mysql://user:password@mysql:3306/${dbName}"
+DATABASE_URL="mysql://user:password@mysql:3306/${dbName}?serverVersion=8.0.32&charset=utf8mb4"
 # DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=10.11.2-MariaDB&charset=utf8mb4"
 # DATABASE_URL="postgresql://app:!ChangeMe!@127.0.0.1:5432/app?serverVersion=16&charset=utf8"
 ###< doctrine/doctrine-bundle ###

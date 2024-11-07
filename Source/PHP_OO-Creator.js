@@ -366,7 +366,106 @@ abstract class AbstractMapping
 
 }`
 
-    fs.writeFileSync(`${projName}/model/AbstractMapping.php`, absMap);
+    fs.writeFileSync(`${projName}/model/Abstract/AbstractMapping.php`, absMap);
+
+    const inter = `<?php
+
+namespace model\\Interface;
+
+use model\\MyPDO;
+use Exception;
+
+use model\\Abstract\\AbstractMapping;
+
+
+interface InterfaceManager
+{
+    public function __construct(MyPDO $pdo);
+
+}`
+
+    fs.writeFileSync(`${projName}/model/Interface/InterfaceManager.php`, inter);
+
+    const laundry = `<?php
+
+namespace model\\Trait;
+
+
+Trait TraitLaundryRoom {
+
+
+   protected function standardClean($cleanThis): string
+    {
+        return htmlspecialchars(strip_tags(trim($cleanThis)));
+    }
+
+   protected function simpleTrim($trimThis): string
+    {
+        return trim($trimThis);
+    }
+
+   protected function urlClean($cleanThisUrl): string
+    {
+        return filter_var($cleanThisUrl, FILTER_SANITIZE_URL);
+    }
+
+   protected function intClean($cleanThisInt): int
+    {
+        $cleanedInt = filter_var($cleanThisInt, FILTER_SANITIZE_NUMBER_INT,
+            FILTER_FLAG_ALLOW_FRACTION
+        );
+        $cleanedInt = intval($cleanedInt);
+        return $cleanedInt;
+    }
+
+   protected function floatClean($cleanThisFloat): float
+    {
+        $cleanedFloat = filter_var($cleanThisFloat, FILTER_SANITIZE_NUMBER_FLOAT,
+            FILTER_FLAG_ALLOW_FRACTION,
+        );
+        $cleanedFloat = floatval($cleanedFloat);
+        return $cleanedFloat;
+    }
+
+   protected function emailClean($cleanThisEmail): string
+    {
+        return filter_var($cleanThisEmail, FILTER_SANITIZE_EMAIL);
+    }
+
+   protected function findTheNeedles($hay): bool
+    {
+        $needles = ["<script>",
+            "<iframe>",
+            "<object>",
+            "<embed>",
+            "<form>",
+            "<input>",
+            "<textarea>",
+            "<select>",
+            "<button>",
+            "<link>",
+            "<meta>",
+            "<style>",
+            "<svg>",
+            "<base>",
+            "<applet>",
+            "script",
+            "'click'",
+            '"click"',
+            "onclick",
+            "onload",
+            'onerror',
+            'src'];
+
+        foreach ($needles as $needle) {
+            if (str_contains($hay, $needle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}`;
+    fs.writeFileSync(`${projName}/model/Trait/TraitLaundryRoom.php`, laundry);
 
 } catch (error) {
             console.log(`Error occurred: ${error.message}`);

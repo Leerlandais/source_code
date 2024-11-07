@@ -18,6 +18,8 @@ const completed = (msg) => {
 
 rl.question("Enter the project name : ", function(projName) {
     rl.question("Enter the database name (DB_NAME): ", function(dbName) {
+        rl.question("Enter Git Repository URL to automatically create remote address (default: no) ", function(git) {
+            const gitRep = git || false;
 
 
         try {
@@ -480,6 +482,10 @@ try {
     execSync(`git branch -m main`, {stdio: 'inherit'});
     execSync(`git add .`, {stdio: 'inherit'});
     execSync(`git commit -m "Setup completed by Leerlandais"`, {stdio: 'inherit'});
+    if(gitRep) {
+        execSync(`git remote add origin ${gitRep}`, {stdio : "inherit"});
+        execSync('git push -u origin main', {stdio : "inherit"});
+    }
 
 
 }catch (error) {
@@ -487,6 +493,7 @@ try {
 }
 
         completed(" - All done!");
+        });
     });
 });
 

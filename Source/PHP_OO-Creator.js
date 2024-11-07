@@ -324,6 +324,56 @@ class MyPDO extends PDO
 }
 
 try {
+    const absMan = `<?php
+
+namespace model\\Abstract;
+use model\\MyPDO;
+
+abstract class AbstractManager {
+    protected MyPDO $db;
+
+    public function __construct(MyPDO $db) {
+        $this->db = $db;
+    }
+}`;
+    fs.writeFileSync(`${projName}/model/Abstract/AbstractManager.php`, absMan);
+
+    const absMap = `<?php
+
+namespace model\\Abstract;
+abstract class AbstractMapping
+{
+
+    public function __construct(array $tab)
+    {
+
+        $this->hydrate($tab);
+    }
+
+    protected function hydrate(array $assoc): void
+    {
+        foreach ($assoc as $key => $value) {
+            $tab = explode("_", $key);
+            $majuscule = array_map('ucfirst',$tab);
+            $newNameCamelCase = implode($majuscule);
+            $methodeName = "set" . $newNameCamelCase;
+
+            if (method_exists($this, $methodeName)) {
+                $this->$methodeName($value);
+            }
+        }
+    }
+
+}`
+
+    fs.writeFileSync(`${projName}/model/AbstractMapping.php`, absMap);
+
+} catch (error) {
+            console.log(`Error occurred: ${error.message}`);
+}
+
+
+try {
     process.chdir(`${projName}`);
     execSync(`composer require "twig/twig:^3.0"`, {stdio: 'inherit'});
     // add git and create the glory commit

@@ -372,23 +372,6 @@ abstract class AbstractMapping
 
                     fs.writeFileSync(`${projName}/model/Abstract/AbstractMapping.php`, absMap);
 
-                    const inter = `<?php
-
-namespace model\\Interface;
-
-use model\\MyPDO;
-use Exception;
-
-use model\\Abstract\\AbstractMapping;
-
-
-interface InterfaceManager
-{
-    public function __construct(MyPDO $pdo);
-
-}`
-
-                    fs.writeFileSync(`${projName}/model/Interface/InterfaceManager.php`, inter);
 
                     const laundry = `<?php
 
@@ -470,6 +453,36 @@ Trait TraitLaundryRoom {
     }
 }`;
                     fs.writeFileSync(`${projName}/model/Trait/TraitLaundryRoom.php`, laundry);
+
+         const int = `<?php
+
+namespace model\\Trait;
+
+trait TraitTestInt
+{
+    protected function verifyInt ($testThis, $min = 0, $max = PHP_INT_MAX) : bool{
+        if ($testThis < $min || $testThis > $max) return false;
+        return true;
+    }
+}`;
+
+                    fs.writeFileSync(`${projName}/model/Trait/TraitIntegerTest.php`, int);
+
+                    const str = `<?php
+
+namespace model\\Trait;
+
+trait TraitStringTest
+{
+    protected function verifyString (?string $testThis) : bool {
+        if (empty($testThis)) return false;
+        return true;
+    }
+}`;
+
+                    fs.writeFileSync(`${projName}/model/Trait/TraitStringTest.php`, str);
+
+
 
                 } catch (error) {
                     console.log(`Error occurred: ${error.message}`);

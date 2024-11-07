@@ -26,6 +26,11 @@ rl.question("Enter the project name : ", function(projName) {
             fs.mkdirSync(`${projName}/controller`);
             fs.mkdirSync(`${projName}/data`);
             fs.mkdirSync(`${projName}/model`);
+            fs.mkdirSync(`${projName}/model/Abstract`);
+            fs.mkdirSync(`${projName}/model/Interface`);
+            fs.mkdirSync(`${projName}/model/Manager`);
+            fs.mkdirSync(`${projName}/model/Mapping`);
+            fs.mkdirSync(`${projName}/model/Trait`);
             fs.mkdirSync(`${projName}/public`);
             fs.mkdirSync(`${projName}/view`);
             fs.mkdirSync(`${projName}/public/images`);
@@ -54,6 +59,11 @@ rl.question("Enter the project name : ", function(projName) {
                 `${projName}/controller`,
                 `${projName}/data`,
                 `${projName}/model`,
+                `${projName}/model/Abstract`,
+                `${projName}/model/Interface`,
+                `${projName}/model/Manager`,
+                `${projName}/model/Mapping`,
+                `${projName}/model/Trait`,
                 `${projName}/public`,
                 `${projName}/public/images`,
                 `${projName}/public/scripts`,
@@ -227,6 +237,7 @@ const PUB_DIR = __DIR__ . '/public/';
 <?php
 use Twig\\Loader\\FilesystemLoader;
 use Twig\\Environment;
+use model\\MyPDO;
 
 require_once "../config.php";
 
@@ -306,7 +317,7 @@ class MyPDO extends PDO
 
 
 }`;
-    fs.writeFileSync(`${projName}/model/MyPDO.php`);
+    fs.writeFileSync(`${projName}/model/MyPDO.php`, pdo);
 
 } catch (error) {
             console.log(`Error occurred: ${error.message}`);

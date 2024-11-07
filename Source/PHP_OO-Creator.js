@@ -9,8 +9,14 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
+const completed = (msg) => {
+    console.log(msg);
+    rl.question('The process seems to have completed successfully - press Enter to close', () => {
+        rl.close();
+    });
+};
 
-rl.question("Enter the project name : ", function(projectName) {
+rl.question("Enter the project name : ", function(projName) {
     rl.question("Enter the database name (DB_NAME): ", function(dbName) {
 
 
@@ -285,7 +291,7 @@ try {
             console.log(`Error occurred: ${error.message}`);
 }
 
-        rl.close();
+        completed("All done!");
     });
 });
 

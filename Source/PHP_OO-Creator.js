@@ -18,71 +18,73 @@ const completed = (msg) => {
 
 rl.question("Enter the project name : ", function(projName) {
     rl.question("Enter the database name (DB_NAME): ", function(dbName) {
-        rl.question("Enter Git Repository URL to automatically create remote address (default: no) ", function(git) {
-            const gitRep = git || false;
+        rl.question("MariaDb or Mysql : (default: 3307) ", function(dbPortal) {
+            const dbPort = dbPortal || 3307;
+            rl.question("Enter Git Repository URL to automatically create remote address (default: no) ", function(git) {
+                const gitRep = git || false;
 
 
-        try {
-            // Create all directories under the project name
-            fs.mkdirSync(`${projName}`);
-            fs.mkdirSync(`${projName}/controller`);
-            fs.mkdirSync(`${projName}/data`);
-            fs.mkdirSync(`${projName}/model`);
-            fs.mkdirSync(`${projName}/model/Abstract`);
-            fs.mkdirSync(`${projName}/model/Interface`);
-            fs.mkdirSync(`${projName}/model/Manager`);
-            fs.mkdirSync(`${projName}/model/Mapping`);
-            fs.mkdirSync(`${projName}/model/Trait`);
-            fs.mkdirSync(`${projName}/public`);
-            fs.mkdirSync(`${projName}/view`);
-            fs.mkdirSync(`${projName}/public/images`);
-            fs.mkdirSync(`${projName}/public/scripts`);
-            fs.mkdirSync(`${projName}/public/styles`);
-            fs.mkdirSync(`${projName}/view/private`);
-            fs.mkdirSync(`${projName}/view/public`);
+                try {
+                    // Create all directories under the project name
+                    fs.mkdirSync(`${projName}`);
+                    fs.mkdirSync(`${projName}/controller`);
+                    fs.mkdirSync(`${projName}/data`);
+                    fs.mkdirSync(`${projName}/model`);
+                    fs.mkdirSync(`${projName}/model/Abstract`);
+                    fs.mkdirSync(`${projName}/model/Interface`);
+                    fs.mkdirSync(`${projName}/model/Manager`);
+                    fs.mkdirSync(`${projName}/model/Mapping`);
+                    fs.mkdirSync(`${projName}/model/Trait`);
+                    fs.mkdirSync(`${projName}/public`);
+                    fs.mkdirSync(`${projName}/view`);
+                    fs.mkdirSync(`${projName}/public/images`);
+                    fs.mkdirSync(`${projName}/public/scripts`);
+                    fs.mkdirSync(`${projName}/public/styles`);
+                    fs.mkdirSync(`${projName}/view/private`);
+                    fs.mkdirSync(`${projName}/view/public`);
 
-            function createReadmeInFolders(folders) {
-                folders.forEach(folder => {
-                    try {
-                        if (fs.existsSync(folder) && fs.readdirSync(folder).length === 0) {
-                            const folderName = path.basename(folder);
-                            const readmeContent = `# Placeholder for ${folderName}`;
+                    function createReadmeInFolders(folders) {
+                        folders.forEach(folder => {
+                            try {
+                                if (fs.existsSync(folder) && fs.readdirSync(folder).length === 0) {
+                                    const folderName = path.basename(folder);
+                                    const readmeContent = `# Placeholder for ${folderName}`;
 
-                            fs.writeFileSync(path.join(folder, 'README.md'), readmeContent);
-                            console.log(`Created README.md in ${folder}`);
-                        }
-                    } catch (error) {
-                        console.error(`Error processing folder ${folder}: ${error.message}`);
+                                    fs.writeFileSync(path.join(folder, 'README.md'), readmeContent);
+                                    console.log(`Created README.md in ${folder}`);
+                                }
+                            } catch (error) {
+                                console.error(`Error processing folder ${folder}: ${error.message}`);
+                            }
+                        });
                     }
-                });
-            }
 
-            createReadmeInFolders([
-                `${projName}/controller`,
-                `${projName}/data`,
-                `${projName}/model`,
-                `${projName}/model/Abstract`,
-                `${projName}/model/Interface`,
-                `${projName}/model/Manager`,
-                `${projName}/model/Mapping`,
-                `${projName}/model/Trait`,
-                `${projName}/public`,
-                `${projName}/public/images`,
-                `${projName}/public/scripts`,
-                `${projName}/public/styles`,
-                `${projName}/view`,
-                `${projName}/view/private`,
-                `${projName}/view/public`
-            ]);
+                    createReadmeInFolders([
+                        `${projName}/controller`,
+                        `${projName}/data`,
+                        `${projName}/model`,
+                        `${projName}/model/Abstract`,
+                        `${projName}/model/Interface`,
+                        `${projName}/model/Manager`,
+                        `${projName}/model/Mapping`,
+                        `${projName}/model/Trait`,
+                        `${projName}/public`,
+                        `${projName}/public/images`,
+                        `${projName}/public/scripts`,
+                        `${projName}/public/styles`,
+                        `${projName}/view`,
+                        `${projName}/view/private`,
+                        `${projName}/view/public`
+                    ]);
 
-            const extIndex = `
+                    const extIndex = `
             <?php
             header("Location: public");
             die();
             `;
-            fs.writeFileSync(`${projName}/index.php`, extIndex);
+                    fs.writeFileSync(`${projName}/index.php`, extIndex);
 
-            const gitIgnore = `
+                    const gitIgnore = `
 .idea/
 config.php
 .vscode/
@@ -129,21 +131,21 @@ pnpm-debug.log*
 /bin/
 /public/bundles/
 `;
-            fs.writeFileSync(`${projName}/.gitignore`, gitIgnore);
-        } catch (error) {
-            console.error(`Error occurred: ${error.message}`);
-        }
+                    fs.writeFileSync(`${projName}/.gitignore`, gitIgnore);
+                } catch (error) {
+                    console.error(`Error occurred: ${error.message}`);
+                }
 
-try {
-    const rteCont = `
+                try {
+                    const rteCont = `
 <?php
 require_once PROJECT_DIRECTORY."/controller/publicController.php";
             `;
-    fs.writeFileSync(`${projName}/controller/routerController.php`, rteCont);
+                    fs.writeFileSync(`${projName}/controller/routerController.php`, rteCont);
 
 
-    // and pubCount....
-    const pubCont = `
+                    // and pubCount....
+                    const pubCont = `
 <?php
 $route = $_GET['route'] ?? 'home';
 switch ($route) {
@@ -155,10 +157,10 @@ switch ($route) {
     echo $twig->render("err404.html.twig");
 }
             `;
-    fs.writeFileSync(`${projName}/controller/publicController.php`, pubCont);
+                    fs.writeFileSync(`${projName}/controller/publicController.php`, pubCont);
 
-    // ...base.twig
-    const baseTwig = `
+                    // ...base.twig
+                    const baseTwig = `
 <\!DOCTYPE html>
 <html lang="{% block lang %}fr{% endblock %}">
 <head>
@@ -199,43 +201,43 @@ switch ($route) {
 
 </body> {% endblock %}
 </html>`;
-    fs.writeFileSync(`${projName}/view/base.html.twig`, baseTwig);
+                    fs.writeFileSync(`${projName}/view/base.html.twig`, baseTwig);
 
-    // template.twig
-    const tempTwig = `{% extends 'base.html.twig' %}   
+                    // template.twig
+                    const tempTwig = `{% extends 'base.html.twig' %}   
         `;
-    fs.writeFileSync(`${projName}/view/template.html.twig`, tempTwig);
+                    fs.writeFileSync(`${projName}/view/template.html.twig`, tempTwig);
 
-    // homepage.twig
-    const homeTwig = `{% extends 'template.html.twig' %}   
+                    // homepage.twig
+                    const homeTwig = `{% extends 'template.html.twig' %}   
 {% block hero %}If you can see this, all is good{% endblock %}
         `;
-    fs.writeFileSync(`${projName}/view/public/public.index.html.twig`, homeTwig);
+                    fs.writeFileSync(`${projName}/view/public/public.index.html.twig`, homeTwig);
 
 
-} catch (error) {
-            console.error(`Error occurred: ${error.message}`);
-}
+                } catch (error) {
+                    console.error(`Error occurred: ${error.message}`);
+                }
 
-try {
-    const cfgFile = `
+                try {
+                    const cfgFile = `
     <?php
 const DB_DRIVER = "mysql";
 const DB_HOST = "localhost";
 const DB_LOGIN = "root";
 const DB_PWD = "";
 const DB_NAME = "${dbName}";
-const DB_PORT = 3307;
+const DB_PORT = ${dbPort};
 const DB_CHARSET = "utf8mb4";
 
 const PROJECT_DIRECTORY = __DIR__;
 const PUB_DIR = __DIR__ . '/public/';
 `;
 
-    fs.writeFileSync(`${projName}/config.php`, cfgFile);
+                    fs.writeFileSync(`${projName}/config.php`, cfgFile);
 
 
-    const pubIndex = `
+                    const pubIndex = `
 <?php
 use Twig\\Loader\\FilesystemLoader;
 use Twig\\Environment;
@@ -285,9 +287,9 @@ require_once PROJECT_DIRECTORY.'/controller/routerController.php';
 
 // $db = null;   
         `;
-    fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
+                    fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
 
-    const pdo = `<?php
+                    const pdo = `<?php
 
 namespace model;
 
@@ -319,14 +321,14 @@ class MyPDO extends PDO
 
 
 }`;
-    fs.writeFileSync(`${projName}/model/MyPDO.php`, pdo);
+                    fs.writeFileSync(`${projName}/model/MyPDO.php`, pdo);
 
-} catch (error) {
-            console.log(`Error occurred: ${error.message}`);
-}
+                } catch (error) {
+                    console.log(`Error occurred: ${error.message}`);
+                }
 
-try {
-    const absMan = `<?php
+                try {
+                    const absMan = `<?php
 
 namespace model\\Abstract;
 use model\\MyPDO;
@@ -338,9 +340,9 @@ abstract class AbstractManager {
         $this->db = $db;
     }
 }`;
-    fs.writeFileSync(`${projName}/model/Abstract/AbstractManager.php`, absMan);
+                    fs.writeFileSync(`${projName}/model/Abstract/AbstractManager.php`, absMan);
 
-    const absMap = `<?php
+                    const absMap = `<?php
 
 namespace model\\Abstract;
 abstract class AbstractMapping
@@ -368,9 +370,9 @@ abstract class AbstractMapping
 
 }`
 
-    fs.writeFileSync(`${projName}/model/Abstract/AbstractMapping.php`, absMap);
+                    fs.writeFileSync(`${projName}/model/Abstract/AbstractMapping.php`, absMap);
 
-    const inter = `<?php
+                    const inter = `<?php
 
 namespace model\\Interface;
 
@@ -386,9 +388,9 @@ interface InterfaceManager
 
 }`
 
-    fs.writeFileSync(`${projName}/model/Interface/InterfaceManager.php`, inter);
+                    fs.writeFileSync(`${projName}/model/Interface/InterfaceManager.php`, inter);
 
-    const laundry = `<?php
+                    const laundry = `<?php
 
 namespace model\\Trait;
 
@@ -467,32 +469,33 @@ Trait TraitLaundryRoom {
         return false;
     }
 }`;
-    fs.writeFileSync(`${projName}/model/Trait/TraitLaundryRoom.php`, laundry);
+                    fs.writeFileSync(`${projName}/model/Trait/TraitLaundryRoom.php`, laundry);
 
-} catch (error) {
-            console.log(`Error occurred: ${error.message}`);
-}
-
-
-try {
-    process.chdir(`${projName}`);
-    execSync(`composer require "twig/twig:^3.0"`, {stdio: 'inherit'});
-    // add git and create the glory commit
-    execSync(`git init`, {stdio: 'inherit'});
-    execSync(`git branch -m main`, {stdio: 'inherit'});
-    execSync(`git add .`, {stdio: 'inherit'});
-    execSync(`git commit -m "Setup completed by Leerlandais"`, {stdio: 'inherit'});
-    if(gitRep) {
-        execSync(`git remote add origin ${gitRep}`, {stdio : "inherit"});
-        execSync('git push -u origin main', {stdio : "inherit"});
-    }
+                } catch (error) {
+                    console.log(`Error occurred: ${error.message}`);
+                }
 
 
-}catch (error) {
-            console.log(`Error occurred: ${error.message}`);
-}
+                try {
+                    process.chdir(`${projName}`);
+                    execSync(`composer require "twig/twig:^3.0"`, {stdio: 'inherit'});
+                    // add git and create the glory commit
+                    execSync(`git init`, {stdio: 'inherit'});
+                    execSync(`git branch -m main`, {stdio: 'inherit'});
+                    execSync(`git add .`, {stdio: 'inherit'});
+                    execSync(`git commit -m "Setup completed by Leerlandais"`, {stdio: 'inherit'});
+                    if (gitRep) {
+                        execSync(`git remote add origin ${gitRep}`, {stdio: "inherit"});
+                        execSync('git push -u origin main', {stdio: "inherit"});
+                    }
 
-        completed(" - All done!");
+
+                } catch (error) {
+                    console.log(`Error occurred: ${error.message}`);
+                }
+
+                completed(" - All done!");
+            });
         });
     });
 });

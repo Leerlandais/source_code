@@ -274,6 +274,39 @@ require_once PROJECT_DIRECTORY.'/controller/routerController.php';
         `;
     fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
 
+    const pdo = `<?php
+
+namespace model;
+
+use PDO;
+use Exception;
+use PDOStatement;
+
+class MyPDO extends PDO
+{
+
+    private static ?MyPDO $instance = null;
+
+    private function __construct($dsn, $username = null, $password = null, $options = null)
+    {
+        parent::__construct($dsn, $username, $password, $options);
+    }
+
+    public static function getInstance($dsn, $username = null, $password = null, $options = null): MyPDO
+    {
+        if (self::$instance === null) {
+            try {
+                self::$instance = new MyPDO($dsn, $username, $password, $options);
+            } catch (Exception $e) {
+                die("Erreur de connexion : " . $e->getMessage());
+            }
+        }
+        return self::$instance;
+    }
+
+
+}`;
+    fs.writeFileSync(`${projName}/model/MyPDO.php`);
 
 } catch (error) {
             console.log(`Error occurred: ${error.message}`);
@@ -288,13 +321,12 @@ try {
     execSync(`git add .`, {stdio: 'inherit'});
     execSync(`git commit -m "Setup completed by Leerlandais"`, {stdio: 'inherit'});
 
-    completed("Setup completed successfully!");
 
 }catch (error) {
             console.log(`Error occurred: ${error.message}`);
 }
 
-        completed("All done!");
+        completed(" - All done!");
     });
 });
 

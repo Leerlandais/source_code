@@ -215,6 +215,9 @@ const DB_PWD = "";
 const DB_NAME = "${dbName}";
 const DB_PORT = 3307;
 const DB_CHARSET = "utf8mb4";
+
+const PROJECT_DIRECTORY = __DIR__;
+const PUB_DIR = __DIR__ . '/public/';
 `;
 
     fs.writeFileSync(`${projName}/config.php`, cfgFile);

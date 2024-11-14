@@ -18,8 +18,8 @@ const completed = (msg) => {
 
 rl.question("Enter the project name : ", function(projName) {
     rl.question("Enter the database name (DB_NAME): ", function(dbName) {
-        rl.question("MariaDb or Mysql : (default: 3307) ", function(dbPortal) {
-            const dbPort = dbPortal || 3307;
+        rl.question("MariaDb or Mysql : (default: 3306) ", function(dbPortal) {
+            const dbPort = dbPortal || 3306;
             rl.question("Enter Git Repository URL to automatically create remote address (default: no) ", function(git) {
                 const gitRep = git || false;
 
@@ -27,7 +27,7 @@ rl.question("Enter the project name : ", function(projName) {
                 try {
                     // Create all directories under the project name
                     fs.mkdirSync(`${projName}`);
-                    fs.mkdirSync(`${projName}/controller`);
+                    fs.mkdirSync(`${projName}/Controllers`);
                     fs.mkdirSync(`${projName}/data`);
                     fs.mkdirSync(`${projName}/model`);
                     fs.mkdirSync(`${projName}/model/Abstract`);
@@ -42,7 +42,7 @@ rl.question("Enter the project name : ", function(projName) {
                     fs.mkdirSync(`${projName}/public/styles`);
                     fs.mkdirSync(`${projName}/view/private`);
                     fs.mkdirSync(`${projName}/view/public`);
-                    fs.mkdirSync(`${projName}/Routing`);
+                    fs.mkdirSync(`${projName}/routing`);
 
                     function createReadmeInFolders(folders) {
                         folders.forEach(folder => {
@@ -61,7 +61,7 @@ rl.question("Enter the project name : ", function(projName) {
                     }
 
                     createReadmeInFolders([
-                        `${projName}/controller`,
+                        `${projName}/Controllers`,
                         `${projName}/data`,
                         `${projName}/model`,
                         `${projName}/model/Abstract`,
@@ -76,13 +76,14 @@ rl.question("Enter the project name : ", function(projName) {
                         `${projName}/view`,
                         `${projName}/view/private`,
                         `${projName}/view/public`,
-                        `${projName}/Routing`
+                        `${projName}/routing`
                     ]);
 
-                    const extIndex = `<?php
-                    header("Location: public");
-                    die();
-                    `;
+                    const extIndex = `
+            <?php
+            header("Location: public");
+            die();
+            `;
                     fs.writeFileSync(`${projName}/index.php`, extIndex);
 
                     const gitIgnore = `
@@ -138,53 +139,8 @@ pnpm-debug.log*
                 }
 
                 try {
-const router = `<?php
 
-namespace Routing;
-// add use for each manager added to the construct
-use model\\MyPDO;
-use Twig\\Environment;
-
-class Router
-{
-    private array $routes = [];
-    private Environment $twig;
-
-    private MyPDO $db;
-
-    public function __construct(Environment $twig, MyPDO $db)
-    {
-        $this->twig = $twig;
-// add managers as needed 
-        $this->db = $db;
-    }
-
-    public function registerRoute(string $routeName, string $controllerClass, string $methodName): void
-    {
-        $this->routes[$routeName] = [
-            'controller' => $controllerClass,
-            'method' => $methodName
-        ];
-    }
-
-    public function handleRequest($route): void
-    {
-        if (!isset($this->routes[$route])) {
-            $route = '404';
-        }
-
-        $controllerClass = $this->routes[$route]['controller'];
-        $method = $this->routes[$route]['method'];
-// don't forget to add the managers here, too
-        $controller = new $controllerClass($this->twig, $this->db);
-
-        $controller->$method();
-    }
-}
-`
-                    fs.writeFileSync(`${projName}/Routing/Router.php`, router);
-
-
+                    // ...base.twig
                     const baseTwig = `
 <\!DOCTYPE html>
 <html lang="{% block lang %}fr{% endblock %}">
@@ -259,6 +215,23 @@ const PUB_DIR = __DIR__ . '/public/';
 
                     const pubIndex = `
 <?php
+session_start();
+
+if (isset($_SESSION["activity"]) && time() - $_SESSION["activity"] > 1800) {
+    session_unset();
+    session_destroy();
+    header("location: ./");
+    exit();
+}
+$_SESSION["activity"] = time();
+
+if (isset($_SESSION["errorMessage"])) {
+    $errorMessage = $_SESSION["errorMessage"];
+    unset($_SESSION["errorMessage"]);
+}else {
+    $errorMessage = "";
+}
+
 use Twig\\Loader\\FilesystemLoader;
 use Twig\\Environment;
 use model\\MyPDO;
@@ -303,9 +276,8 @@ try {
    die($e->getMessage());
 }
 
-require_once PROJECT_DIRECTORY.'/controller/routerController.php';
-
-// $db = null;   
+require_once PROJECT_DIRECTORY . '/Routing/Routes.php';
+ $db = null;   
         `;
                     fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
 
@@ -502,7 +474,122 @@ trait TraitStringTest
 
                     fs.writeFileSync(`${projName}/model/Trait/TraitStringTest.php`, str);
 
+                } catch (error) {
+                    console.log(`Error occurred: ${error.message}`);
+                }
 
+                try {
+                const router = `<?php
+
+namespace Routing;
+
+use model\\MyPDO;
+use Twig\\Environment;
+
+class Router
+{
+    private array $routes = [];
+    private Environment $twig;
+
+    private MyPDO $db;
+
+    public function __construct(Environment $twig, MyPDO $db)
+    {
+        $this->twig = $twig;
+
+        $this->db = $db;
+    }
+
+    public function registerRoute(string $routeName, string $controllerClass, string $methodName): void
+    {
+        $this->routes[$routeName] = [
+            'controller' => $controllerClass,
+            'method' => $methodName
+        ];
+    }
+
+    public function handleRequest($route): void
+    {
+        if (!isset($this->routes[$route])) {
+            $route = '404';
+        }
+
+        $controllerClass = $this->routes[$route]['controller'];
+        $method = $this->routes[$route]['method'];
+
+        $controller = new $controllerClass($this->twig, $this->db);
+
+        $controller->$method();
+    }
+}
+`
+                    fs.writeFileSync(`${projName}/routing/Router.php`, router);
+
+                const routes = `<?php
+
+
+
+use Controllers\\HomeController;
+
+use Routing\\Router;
+
+$router = new Router($twig,$db);
+
+// Register routes
+$router->registerRoute('home', HomeController::class, 'index');
+
+// Handle request
+$route = $_GET['route'] ?? 'home'; // use the usual method to set the default page
+$router->handleRequest($route);`
+
+                    fs.writeFileSync(`${projName}/routing/Routes.php`, routes);
+
+                const homeCont = `<?php
+
+namespace Controllers;
+
+class HomeController extends AbstractController{
+
+    public function index() {
+    global $sessionRole, $errorMessage;
+
+
+        echo $this->twig->render("public/public.index.html.twig", [
+            'sessionRole' => $sessionRole,
+            'errorMessage' => $errorMessage,
+
+        ]);
+    }
+
+
+}
+`;
+                fs.writeFileSync(`${projName}/Controllers/HomeController.php`, homeCont);
+
+                const absCont = `<?php
+
+namespace Controllers;
+
+
+use model\\MyPDO;
+use Twig\\Environment;
+
+// As with Manager and Mapping, the Controllers have lots of shared needs, so Abstract to keep it DRY
+
+abstract class AbstractController
+{
+    protected $twig;
+
+    protected MyPDO $db;
+    public function __construct(Environment $twig, MyPDO $db)
+    {
+        $this->twig = $twig;
+
+        $this->db = $db;
+    }
+}
+`
+                    fs.writeFileSync(`${projName}/Controllers/AbstractController.php`, absCont);
 
                 } catch (error) {
                     console.log(`Error occurred: ${error.message}`);
@@ -533,4 +620,4 @@ trait TraitStringTest
     });
 });
 
-// pkg Source/PHP_OO-Creator.js --targets node18-win-x64 --output ObjectProjMaker.exe
+// pkg Source/PHP_OO-Creator-V2.js --targets node18-win-x64 --output ObjectProjMaker-V2.exe

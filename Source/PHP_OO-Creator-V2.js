@@ -26,7 +26,7 @@ rl.question("Enter the project name : ", function(projName) {
 
                 try {
                     // Create all directories under the project name
-                    fs.mkdirSync(`${projName}`);
+                //    fs.mkdirSync(`${projName}`);
                     fs.mkdirSync(`${projName}/Controllers`);
                     fs.mkdirSync(`${projName}/data`);
                     fs.mkdirSync(`${projName}/model`);
@@ -600,8 +600,8 @@ abstract class AbstractController
                     process.chdir(`${projName}`);
                     execSync(`composer require "twig/twig:^3.0"`, {stdio: 'inherit'});
                     // add git and create the glory commit
-                    execSync(`git init`, {stdio: 'inherit'});
-                    execSync(`git branch -m main`, {stdio: 'inherit'});
+                  //  execSync(`git init`, {stdio: 'inherit'});
+                  //  execSync(`git branch -m main`, {stdio: 'inherit'});
                     execSync(`git add .`, {stdio: 'inherit'});
                     execSync(`git commit -m "Setup completed by Leerlandais"`, {stdio: 'inherit'});
                     if (gitRep) {
@@ -615,6 +615,7 @@ abstract class AbstractController
                 }
 
                 completed(" - All done!");
+
             });
         });
     });

@@ -28,6 +28,7 @@ rl.question("Enter the project name : ", function(projName) {
                     // Create all directories under the project name
                     fs.mkdirSync(`${projName}`);
                     fs.mkdirSync(`${projName}/controller`);
+                    fs.mkdirSync(`${projName}/controller/Abstract`);
                     fs.mkdirSync(`${projName}/data`);
                     fs.mkdirSync(`${projName}/model`);
                     fs.mkdirSync(`${projName}/model/Abstract`);

@@ -18,16 +18,17 @@ const completed = (msg) => {
 
 rl.question("Enter the project name : ", function(projName) {
     rl.question("Enter the database name (DB_NAME): ", function(dbName) {
-        rl.question("MariaDb or Mysql : (default: 3306) ", function(dbPortal) {
-            const dbPort = dbPortal || 3306;
+        rl.question("MariaDb or Mysql : (default: 3307) ", function(dbPortal) {
+            const dbPort = dbPortal || 3307;
             rl.question("Enter Git Repository URL to automatically create remote address (default: no) ", function(git) {
                 const gitRep = git || false;
 
 
                 try {
                     // Create all directories under the project name
-                //    fs.mkdirSync(`${projName}`);
-                    fs.mkdirSync(`${projName}/Controllers`);
+                    fs.mkdirSync(`${projName}`);
+                    fs.mkdirSync(`${projName}/controller`);
+                    fs.mkdirSync(`${projName}/controller/Abstract`);
                     fs.mkdirSync(`${projName}/data`);
                     fs.mkdirSync(`${projName}/model`);
                     fs.mkdirSync(`${projName}/model/Abstract`);
@@ -42,7 +43,6 @@ rl.question("Enter the project name : ", function(projName) {
                     fs.mkdirSync(`${projName}/public/styles`);
                     fs.mkdirSync(`${projName}/view/private`);
                     fs.mkdirSync(`${projName}/view/public`);
-                    fs.mkdirSync(`${projName}/routing`);
 
                     function createReadmeInFolders(folders) {
                         folders.forEach(folder => {
@@ -61,7 +61,7 @@ rl.question("Enter the project name : ", function(projName) {
                     }
 
                     createReadmeInFolders([
-                        `${projName}/Controllers`,
+                        `${projName}/controller`,
                         `${projName}/data`,
                         `${projName}/model`,
                         `${projName}/model/Abstract`,
@@ -75,15 +75,13 @@ rl.question("Enter the project name : ", function(projName) {
                         `${projName}/public/styles`,
                         `${projName}/view`,
                         `${projName}/view/private`,
-                        `${projName}/view/public`,
-                        `${projName}/routing`
+                        `${projName}/view/public`
                     ]);
 
-                    const extIndex = `
-            <?php
-            header("Location: public");
-            die();
-            `;
+                    const extIndex = `<?php
+                    header("Location: public");
+                    die();
+                    `;
                     fs.writeFileSync(`${projName}/index.php`, extIndex);
 
                     const gitIgnore = `
@@ -139,44 +137,58 @@ pnpm-debug.log*
                 }
 
                 try {
+                    const rteCont = `<?php
+require_once PROJECT_DIRECTORY."/controller/publicController.php";
+            `;
+                    fs.writeFileSync(`${projName}/controller/routerController.php`, rteCont);
+
+
+                    // and pubCount....
+                    const pubCont = `<?php
+                    $route = $_GET['route'] ?? 'home';
+                    switch ($route) {
+                      case 'home':
+                          echo $twig->render("public/public.index.html.twig");
+                              break;
+                                default:
+                                    echo $twig->render("err404.html.twig");
+                                    }
+                                                `;
+                    fs.writeFileSync(`${projName}/controller/publicController.php`, pubCont);
 
                     // ...base.twig
-                    const baseTwig = `
-<\!DOCTYPE html>
-<html lang="{% block lang %}fr{% endblock %}">
-<head>
-    {% block head %}
-        {% block meta %}
-        {% endblock %}
-        <title>{% block title %}Title{% endblock %}</title>
-        {% block stylesheet %}{% endblock %}
-    {% endblock %}
-</head>
-<body class={% block bodyClass %}{% endblock %}>{% block body %}
-
-{% block navBar %}
-    {% block connectBtn %} {% endblock %}
-{% endblock %}
-
-{% block content %}
-    {% block hero %}
-        {% block heroText %}{% endblock %}
-        {% block heroImg  %}{% endblock %}
-    {% endblock %}
-
-    {% block sectionOne %}{% endblock %} {# Change these names as needed #}
-    {% block sectionTwo %}{% endblock %}
-    {% block sectionThree %}{% endblock %}
-
-
-{% endblock %}
-
-{% block footer %}{% endblock %}
-
-{% block javascript %}{% endblock %}
-
-</body> {% endblock %}
-</html>`;
+                    const baseTwig = `<\!DOCTYPE html>
+                    <html lang="{% block lang %}fr{% endblock %}">
+                    <head>
+                    {% block head %}
+                    {% block meta %}
+                      <meta property="og:title" content="E-Commerce by Leerlandais">
+                      <meta property="og:description" content="An E-Commerce site created with OO-PHP and Javascript">
+                      <meta property="og:image" content="https://leerlandais.com/favicon.ico">
+                      <meta property="og:url" content="https://leerlandais.com">
+                      <meta property="og:type" content="website">
+                    {% endblock %}
+                      <title>{% block title %}Title{% endblock %}</title>
+                    {% block stylesheet %}{% endblock %}
+                    {% endblock %}
+                    </head>
+                    <body class={% block bodyClass %}{% endblock %}>{% block body %}
+                    {% block navBar %}
+                        {% block connectBtn %} {% endblock %}
+                        {% endblock %}
+                        {% block content %}
+                            {% block hero %}
+                              {% block heroText %}{% endblock %}
+                              {% block heroImg  %}{% endblock %}
+                            {% endblock %}
+                              {% block sectionOne %}{% endblock %} {# Change these names as needed #}
+                              {% block sectionTwo %}{% endblock %}
+                              {% block sectionThree %}{% endblock %}
+                    {% endblock %}
+                    {% block footer %}{% endblock %}
+                    {% block javascript %}{% endblock %}
+                    </body> {% endblock %}
+                    </html>`;
                     fs.writeFileSync(`${projName}/view/base.html.twig`, baseTwig);
 
                     // template.twig
@@ -196,89 +208,61 @@ pnpm-debug.log*
                 }
 
                 try {
-                    const cfgFile = `
-    <?php
-const DB_DRIVER = "mysql";
-const DB_HOST = "localhost";
-const DB_LOGIN = "root";
-const DB_PWD = "";
-const DB_NAME = "${dbName}";
-const DB_PORT = ${dbPort};
-const DB_CHARSET = "utf8mb4";
-
-const PROJECT_DIRECTORY = __DIR__;
-const PUB_DIR = __DIR__ . '/public/';
-`;
+                    const cfgFile = `<?php
+                    const DB_DRIVER = "mysql";
+                    const DB_HOST = "localhost";
+                    const DB_LOGIN = "root";
+                    const DB_PWD = "";
+                    const DB_NAME = "${dbName}";
+                    const DB_PORT = ${dbPort};
+                    const DB_CHARSET = "utf8mb4";
+                    const PROJECT_DIRECTORY = __DIR__;
+                    const PUB_DIR = __DIR__ . '/public/';
+                    `;
 
                     fs.writeFileSync(`${projName}/config.php`, cfgFile);
 
 
-                    const pubIndex = `
-<?php
-session_start();
-
-if (isset($_SESSION["activity"]) && time() - $_SESSION["activity"] > 1800) {
-    session_unset();
-    session_destroy();
-    header("location: ./");
-    exit();
-}
-$_SESSION["activity"] = time();
-
-if (isset($_SESSION["errorMessage"])) {
-    $errorMessage = $_SESSION["errorMessage"];
-    unset($_SESSION["errorMessage"]);
-}else {
-    $errorMessage = "";
-}
-
-use Twig\\Loader\\FilesystemLoader;
-use Twig\\Environment;
-use model\\MyPDO;
-
-require_once "../config.php";
-
-spl_autoload_register(function ($class) {
-  $class = str_replace('\\\\', '/', $class);
-  require PROJECT_DIRECTORY.'/' .$class . '.php';
-});
-
-require_once PROJECT_DIRECTORY.'/vendor/autoload.php';
-
-$loader = new FilesystemLoader(PROJECT_DIRECTORY.'/view/');
-
-// Dev version
-$twig = new Environment($loader, [
-  'debug' => true,
-]);
-$twig->addExtension(new \\Twig\\Extension\\DebugExtension());
-/*
-$twig->addGlobal('PUBLIC_DIR', PUB_DIR);
-$twig->addGlobal('PROJECT_DIR', PROJECT_DIRECTORY);
-*/
-/*
-// Prod version
-$twig = new Environment($loader, [
-   'cache' => '../cache/Twig',
-   'debug' => false,
-]);
-// no DebugExtension online
-*/
-
-
-try {
-   $db = MyPDO::getInstance(DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME . ";port=" . DB_PORT . ";charset=" . DB_CHARSET,
-       DB_LOGIN,
-       DB_PWD);
-   $db->setAttribute(MyPDO::ATTR_ERRMODE, MyPDO::ERRMODE_EXCEPTION);
-   $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-}catch (Exception $e){
-   die($e->getMessage());
-}
-
-require_once PROJECT_DIRECTORY . '/Routing/Routes.php';
- $db = null;   
-        `;
+                    const pubIndex = `<?php
+                    use Twig\\Loader\\FilesystemLoader;
+                    use Twig\\Environment;
+                    use model\\MyPDO;
+                    require_once "../config.php";
+                    spl_autoload_register(function ($class) {
+                      $class = str_replace('\\\\', '/', $class);
+                        require PROJECT_DIRECTORY.'/' .$class . '.php';
+                        });
+                        require_once PROJECT_DIRECTORY.'/vendor/autoload.php';
+                        $loader = new FilesystemLoader(PROJECT_DIRECTORY.'/view/');
+                        // Dev version
+                        $twig = new Environment($loader, [
+                          'debug' => true,
+                          ]);
+                          $twig->addExtension(new \\Twig\\Extension\\DebugExtension());
+                          /*
+                          $twig->addGlobal('PUBLIC_DIR', PUB_DIR);
+                          $twig->addGlobal('PROJECT_DIR', PROJECT_DIRECTORY);
+                          */
+                          /*
+                          // Prod version
+                          $twig = new Environment($loader, [
+                             'cache' => '../cache/Twig',
+                                'debug' => false,
+                                ]);
+                                // no DebugExtension online
+                                */
+                                try {
+                                   $db = MyPDO::getInstance(DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME . ";port=" . DB_PORT . ";charset=" . DB_CHARSET,
+                                          DB_LOGIN,
+                                                 DB_PWD);
+                                                    $db->setAttribute(MyPDO::ATTR_ERRMODE, MyPDO::ERRMODE_EXCEPTION);
+                                                       $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+                                                       }catch (Exception $e){
+                                                          die($e->getMessage());
+                                                          }
+                                                          require_once PROJECT_DIRECTORY.'/controller/routerController.php';
+                                                          // $db = null;   
+                                                                  `;
                     fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
 
                     const pdo = `<?php
@@ -474,122 +458,7 @@ trait TraitStringTest
 
                     fs.writeFileSync(`${projName}/model/Trait/TraitStringTest.php`, str);
 
-                } catch (error) {
-                    console.log(`Error occurred: ${error.message}`);
-                }
 
-                try {
-                const router = `<?php
-
-namespace Routing;
-
-use model\\MyPDO;
-use Twig\\Environment;
-
-class Router
-{
-    private array $routes = [];
-    private Environment $twig;
-
-    private MyPDO $db;
-
-    public function __construct(Environment $twig, MyPDO $db)
-    {
-        $this->twig = $twig;
-
-        $this->db = $db;
-    }
-
-    public function registerRoute(string $routeName, string $controllerClass, string $methodName): void
-    {
-        $this->routes[$routeName] = [
-            'controller' => $controllerClass,
-            'method' => $methodName
-        ];
-    }
-
-    public function handleRequest($route): void
-    {
-        if (!isset($this->routes[$route])) {
-            $route = '404';
-        }
-
-        $controllerClass = $this->routes[$route]['controller'];
-        $method = $this->routes[$route]['method'];
-
-        $controller = new $controllerClass($this->twig, $this->db);
-
-        $controller->$method();
-    }
-}
-`
-                    fs.writeFileSync(`${projName}/routing/Router.php`, router);
-
-                const routes = `<?php
-
-
-
-use Controllers\\HomeController;
-
-use Routing\\Router;
-
-$router = new Router($twig,$db);
-
-// Register routes
-$router->registerRoute('home', HomeController::class, 'index');
-
-// Handle request
-$route = $_GET['route'] ?? 'home'; // use the usual method to set the default page
-$router->handleRequest($route);`
-
-                    fs.writeFileSync(`${projName}/routing/Routes.php`, routes);
-
-                const homeCont = `<?php
-
-namespace Controllers;
-
-class HomeController extends AbstractController{
-
-    public function index() {
-    global $sessionRole, $errorMessage;
-
-
-        echo $this->twig->render("public/public.index.html.twig", [
-            'sessionRole' => $sessionRole,
-            'errorMessage' => $errorMessage,
-
-        ]);
-    }
-
-
-}
-`;
-                fs.writeFileSync(`${projName}/Controllers/HomeController.php`, homeCont);
-
-                const absCont = `<?php
-
-namespace Controllers;
-
-
-use model\\MyPDO;
-use Twig\\Environment;
-
-// As with Manager and Mapping, the Controllers have lots of shared needs, so Abstract to keep it DRY
-
-abstract class AbstractController
-{
-    protected $twig;
-
-    protected MyPDO $db;
-    public function __construct(Environment $twig, MyPDO $db)
-    {
-        $this->twig = $twig;
-
-        $this->db = $db;
-    }
-}
-`
-                    fs.writeFileSync(`${projName}/Controllers/AbstractController.php`, absCont);
 
                 } catch (error) {
                     console.log(`Error occurred: ${error.message}`);
@@ -600,12 +469,12 @@ abstract class AbstractController
                     process.chdir(`${projName}`);
                     execSync(`composer require "twig/twig:^3.0"`, {stdio: 'inherit'});
                     // add git and create the glory commit
-                  //  execSync(`git init`, {stdio: 'inherit'});
-                  //  execSync(`git branch -m main`, {stdio: 'inherit'});
+                    execSync(`git init`, {stdio: 'inherit'});
+                    execSync(`git branch -m main`, {stdio: 'inherit'});
                     execSync(`git add .`, {stdio: 'inherit'});
                     execSync(`git commit -m "Setup completed by Leerlandais"`, {stdio: 'inherit'});
                     if (gitRep) {
-                //        execSync(`git remote add origin ${gitRep}`, {stdio: "inherit"});
+                        execSync(`git remote add origin ${gitRep}`, {stdio: "inherit"});
                         execSync('git push -u origin main', {stdio: "inherit"});
                     }
 
@@ -615,10 +484,9 @@ abstract class AbstractController
                 }
 
                 completed(" - All done!");
-
             });
         });
     });
 });
 
-// pkg Source/PHP_OO-Creator-V2.js --targets node18-win-x64 --output ObjectProjMaker-V2.exe
+// pkg Source/PHP_OO-Creator-V3.js --targets node18-win-x64 --output ObjectProjMaker-V3.exe

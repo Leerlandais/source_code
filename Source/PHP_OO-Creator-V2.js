@@ -27,7 +27,7 @@ rl.question("Enter the project name : ", function(projName) {
                 try {
                     // Create all directories under the project name
                 //    fs.mkdirSync(`${projName}`);
-                    fs.mkdirSync(`${projName}/Controllers`);
+                    fs.mkdirSync(`${projName}/controllers`);
                     fs.mkdirSync(`${projName}/data`);
                     fs.mkdirSync(`${projName}/model`);
                     fs.mkdirSync(`${projName}/model/Abstract`);
@@ -61,7 +61,7 @@ rl.question("Enter the project name : ", function(projName) {
                     }
 
                     createReadmeInFolders([
-                        `${projName}/Controllers`,
+                        `${projName}/controllers`,
                         `${projName}/data`,
                         `${projName}/model`,
                         `${projName}/model/Abstract`,
@@ -79,10 +79,9 @@ rl.question("Enter the project name : ", function(projName) {
                         `${projName}/routing`
                     ]);
 
-                    const extIndex = `
-            <?php
-            header("Location: public");
-            die();
+                    const extIndex = `<?php
+                    header("Location: public");
+                    die();
             `;
                     fs.writeFileSync(`${projName}/index.php`, extIndex);
 
@@ -141,8 +140,7 @@ pnpm-debug.log*
                 try {
 
                     // ...base.twig
-                    const baseTwig = `
-<\!DOCTYPE html>
+                    const baseTwig = `<\!DOCTYPE html>
 <html lang="{% block lang %}fr{% endblock %}">
 <head>
     {% block head %}
@@ -196,123 +194,101 @@ pnpm-debug.log*
                 }
 
                 try {
-                    const cfgFile = `
-    <?php
-const DB_DRIVER = "mysql";
-const DB_HOST = "localhost";
-const DB_LOGIN = "root";
-const DB_PWD = "";
-const DB_NAME = "${dbName}";
-const DB_PORT = ${dbPort};
-const DB_CHARSET = "utf8mb4";
-
-const PROJECT_DIRECTORY = __DIR__;
-const PUB_DIR = __DIR__ . '/public/';
-`;
+                    const cfgFile = `<?php
+                    const DB_DRIVER = "mysql";
+                    const DB_HOST = "localhost";
+                    const DB_LOGIN = "root";
+                    const DB_PWD = "";
+                    const DB_NAME = "${dbName}";
+                    const DB_PORT = ${dbPort};
+                    const DB_CHARSET = "utf8mb4";
+                    const PROJECT_DIRECTORY = __DIR__;
+                    const PUB_DIR = __DIR__ . '/public/';
+                    `;
 
                     fs.writeFileSync(`${projName}/config.php`, cfgFile);
 
 
-                    const pubIndex = `
-<?php
-session_start();
-
-if (isset($_SESSION["activity"]) && time() - $_SESSION["activity"] > 1800) {
-    session_unset();
-    session_destroy();
-    header("location: ./");
-    exit();
-}
-$_SESSION["activity"] = time();
-
-if (isset($_SESSION["errorMessage"])) {
-    $errorMessage = $_SESSION["errorMessage"];
-    unset($_SESSION["errorMessage"]);
-}else {
-    $errorMessage = "";
-}
-
-use Twig\\Loader\\FilesystemLoader;
-use Twig\\Environment;
-use model\\MyPDO;
-
-require_once "../config.php";
-
-spl_autoload_register(function ($class) {
-  $class = str_replace('\\\\', '/', $class);
-  require PROJECT_DIRECTORY.'/' .$class . '.php';
-});
-
-require_once PROJECT_DIRECTORY.'/vendor/autoload.php';
-
-$loader = new FilesystemLoader(PROJECT_DIRECTORY.'/view/');
-
-// Dev version
-$twig = new Environment($loader, [
-  'debug' => true,
-]);
-$twig->addExtension(new \\Twig\\Extension\\DebugExtension());
-/*
-$twig->addGlobal('PUBLIC_DIR', PUB_DIR);
-$twig->addGlobal('PROJECT_DIR', PROJECT_DIRECTORY);
-*/
-/*
-// Prod version
-$twig = new Environment($loader, [
-   'cache' => '../cache/Twig',
-   'debug' => false,
-]);
-// no DebugExtension online
-*/
-
-
-try {
-   $db = MyPDO::getInstance(DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME . ";port=" . DB_PORT . ";charset=" . DB_CHARSET,
-       DB_LOGIN,
-       DB_PWD);
-   $db->setAttribute(MyPDO::ATTR_ERRMODE, MyPDO::ERRMODE_EXCEPTION);
-   $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-}catch (Exception $e){
-   die($e->getMessage());
-}
-
-require_once PROJECT_DIRECTORY . '/Routing/Routes.php';
- $db = null;   
+                    const pubIndex = `<?php
+                    session_start();
+                    if (isset($_SESSION["activity"]) && time() - $_SESSION["activity"] > 1800) {
+                        session_unset();
+                        session_destroy();
+                        header("location: ./");
+                        exit();
+                    }
+                    $_SESSION["activity"] = time();
+                    if (isset($_SESSION["errorMessage"])) {
+                        $errorMessage = $_SESSION["errorMessage"];
+                        unset($_SESSION["errorMessage"]);
+                    }else {
+                        $errorMessage = "";
+                    }
+                    use Twig\\Loader\\FilesystemLoader;
+                    use Twig\\Environment;
+                    use model\\MyPDO;
+                    require_once "../config.php";
+                    spl_autoload_register(function ($class) {
+                      $class = str_replace('\\\\', '/', $class);
+                      require PROJECT_DIRECTORY.'/' .$class . '.php';
+                    });
+                    require_once PROJECT_DIRECTORY.'/vendor/autoload.php';
+                    $loader = new FilesystemLoader(PROJECT_DIRECTORY.'/view/');
+                    // Dev version
+                    // $twig = new Environment($loader, [
+                    //   'debug' => true,
+                    // ]);
+                    // $twig->addExtension(new \\Twig\\Extension\\DebugExtension());
+                    // /*
+                    // $twig->addGlobal('PUBLIC_DIR', PUB_DIR);
+                    // $twig->addGlobal('PROJECT_DIR', PROJECT_DIRECTORY);
+                    // */
+                    // /*
+                    // // Prod version
+                    // $twig = new Environment($loader, [
+                    //    'cache' => '../cache/Twig',
+                    //    'debug' => false,
+                    // ]);
+                    // // no DebugExtension online
+                    // */
+                    // try {
+                    //    $db = MyPDO::getInstance(DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME . ";port=" . DB_PORT . ";charset=" . DB_CHARSET,
+                    //        DB_LOGIN,
+                    //        DB_PWD);
+                    //    $db->setAttribute(MyPDO::ATTR_ERRMODE, MyPDO::ERRMODE_EXCEPTION);
+                    //    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+                    // }catch (Exception $e){
+                    //    die($e->getMessage());
+                    // }
+                    // require_once PROJECT_DIRECTORY . '/Routing/Routes.php';
+                    //  $db = null;   
         `;
                     fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
 
                     const pdo = `<?php
-
-namespace model;
-
-use PDO;
-use Exception;
-use PDOStatement;
-
-class MyPDO extends PDO
-{
-
-    private static ?MyPDO $instance = null;
-
-    private function __construct($dsn, $username = null, $password = null, $options = null)
-    {
-        parent::__construct($dsn, $username, $password, $options);
-    }
-
-    public static function getInstance($dsn, $username = null, $password = null, $options = null): MyPDO
-    {
-        if (self::$instance === null) {
-            try {
-                self::$instance = new MyPDO($dsn, $username, $password, $options);
-            } catch (Exception $e) {
-                die("Erreur de connexion : " . $e->getMessage());
-            }
-        }
-        return self::$instance;
-    }
-
-
-}`;
+                    namespace model;
+                    use PDO;
+                    use Exception;
+                    use PDOStatement;
+                    class MyPDO extends PDO
+                    {
+                        private static ?MyPDO $instance = null;
+                        private function __construct($dsn, $username = null, $password = null, $options = null)
+                        {
+                            parent::__construct($dsn, $username, $password, $options);
+                        }
+                        public static function getInstance($dsn, $username = null, $password = null, $options = null): MyPDO
+                        {
+                            if (self::$instance === null) {
+                                try {
+                                    self::$instance = new MyPDO($dsn, $username, $password, $options);
+                                } catch (Exception $e) {
+                                    die("Erreur de connexion : " . $e->getMessage());
+                                }
+                            }
+                            return self::$instance;
+                        }
+                    }`;
                     fs.writeFileSync(`${projName}/model/MyPDO.php`, pdo);
 
                 } catch (error) {
@@ -321,156 +297,131 @@ class MyPDO extends PDO
 
                 try {
                     const absMan = `<?php
-
-namespace model\\Abstract;
-use model\\MyPDO;
-
-abstract class AbstractManager {
-    protected MyPDO $db;
-
-    public function __construct(MyPDO $db) {
-        $this->db = $db;
-    }
-}`;
+                    namespace model\\Abstract;
+                    use model\\MyPDO;
+                    abstract class AbstractManager {
+                        protected MyPDO $db;
+                        public function __construct(MyPDO $db) {
+                            $this->db = $db;
+                        }
+                            }`;
                     fs.writeFileSync(`${projName}/model/Abstract/AbstractManager.php`, absMan);
 
                     const absMap = `<?php
-
-namespace model\\Abstract;
-abstract class AbstractMapping
-{
-
-    public function __construct(array $tab)
-    {
-
-        $this->hydrate($tab);
-    }
-
-    protected function hydrate(array $assoc): void
-    {
-        foreach ($assoc as $key => $value) {
-            $tab = explode("_", $key);
-            $majuscule = array_map('ucfirst',$tab);
-            $newNameCamelCase = implode($majuscule);
-            $methodeName = "set" . $newNameCamelCase;
-
-            if (method_exists($this, $methodeName)) {
-                $this->$methodeName($value);
-            }
-        }
-    }
-
-}`
+                    namespace model\\Abstract;
+                    abstract class AbstractMapping
+                    {
+                        public function __construct(array $tab)
+                        {
+                            $this->hydrate($tab);
+                        }
+                        protected function hydrate(array $assoc): void
+                        {
+                            foreach ($assoc as $key => $value) {
+                                $tab = explode("_", $key);
+                                $majuscule = array_map('ucfirst',$tab);
+                                $newNameCamelCase = implode($majuscule);
+                                $methodeName = "set" . $newNameCamelCase;
+                                if (method_exists($this, $methodeName)) {
+                                    $this->$methodeName($value);
+                                }
+                            }
+                        }
+                    }`
 
                     fs.writeFileSync(`${projName}/model/Abstract/AbstractMapping.php`, absMap);
 
 
                     const laundry = `<?php
-
-namespace model\\Trait;
-
-
-Trait TraitLaundryRoom {
-
-
-   protected function standardClean($cleanThis): string
-    {
-        return htmlspecialchars(strip_tags(trim($cleanThis)));
-    }
-
-   protected function simpleTrim($trimThis): string
-    {
-        return trim($trimThis);
-    }
-
-   protected function urlClean($cleanThisUrl): string
-    {
-        return filter_var($cleanThisUrl, FILTER_SANITIZE_URL);
-    }
-
-   protected function intClean($cleanThisInt): int
-    {
-        $cleanedInt = filter_var($cleanThisInt, FILTER_SANITIZE_NUMBER_INT,
-            FILTER_FLAG_ALLOW_FRACTION
-        );
-        $cleanedInt = intval($cleanedInt);
-        return $cleanedInt;
-    }
-
-   protected function floatClean($cleanThisFloat): float
-    {
-        $cleanedFloat = filter_var($cleanThisFloat, FILTER_SANITIZE_NUMBER_FLOAT,
-            FILTER_FLAG_ALLOW_FRACTION,
-        );
-        $cleanedFloat = floatval($cleanedFloat);
-        return $cleanedFloat;
-    }
-
-   protected function emailClean($cleanThisEmail): string
-    {
-        return filter_var($cleanThisEmail, FILTER_SANITIZE_EMAIL);
-    }
-
-   protected function findTheNeedles($hay): bool
-    {
-        $needles = ["<script>",
-            "<iframe>",
-            "<object>",
-            "<embed>",
-            "<form>",
-            "<input>",
-            "<textarea>",
-            "<select>",
-            "<button>",
-            "<link>",
-            "<meta>",
-            "<style>",
-            "<svg>",
-            "<base>",
-            "<applet>",
-            "script",
-            "'click'",
-            '"click"',
-            "onclick",
-            "onload",
-            'onerror',
-            'src'];
-
-        foreach ($needles as $needle) {
-            if (str_contains($hay, $needle)) {
-                return true;
-            }
-        }
-        return false;
-    }
-}`;
+                    namespace model\\Trait;
+                    Trait TraitLaundryRoom {
+                       protected function standardClean($cleanThis): string
+                        {
+                            return htmlspecialchars(strip_tags(trim($cleanThis)));
+                        }
+                       protected function simpleTrim($trimThis): string
+                        {
+                            return trim($trimThis);
+                        }
+                       protected function urlClean($cleanThisUrl): string
+                        {
+                            return filter_var($cleanThisUrl, FILTER_SANITIZE_URL);
+                        }
+                       protected function intClean($cleanThisInt): int
+                        {
+                            $cleanedInt = filter_var($cleanThisInt, FILTER_SANITIZE_NUMBER_INT,
+                                FILTER_FLAG_ALLOW_FRACTION
+                            );
+                            $cleanedInt = intval($cleanedInt);
+                            return $cleanedInt;
+                        }
+                       protected function floatClean($cleanThisFloat): float
+                        {
+                            $cleanedFloat = filter_var($cleanThisFloat, FILTER_SANITIZE_NUMBER_FLOAT,
+                                FILTER_FLAG_ALLOW_FRACTION,
+                            );
+                            $cleanedFloat = floatval($cleanedFloat);
+                            return $cleanedFloat;
+                        }
+                       protected function emailClean($cleanThisEmail): string
+                        {
+                            return filter_var($cleanThisEmail, FILTER_SANITIZE_EMAIL);
+                        }
+                       protected function findTheNeedles($hay): bool
+                        {
+                            $needles = ["<script>",
+                                "<iframe>",
+                                "<object>",
+                                "<embed>",
+                                "<form>",
+                                "<input>",
+                                "<textarea>",
+                                "<select>",
+                                "<button>",
+                                "<link>",
+                                "<meta>",
+                                "<style>",
+                                "<svg>",
+                                "<base>",
+                                "<applet>",
+                                "script",
+                                "'click'",
+                                '"click"',
+                                "onclick",
+                                "onload",
+                                'onerror',
+                                'src'];
+                            foreach ($needles as $needle) {
+                                if (str_contains($hay, $needle)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                    }`;
                     fs.writeFileSync(`${projName}/model/Trait/TraitLaundryRoom.php`, laundry);
 
          const int = `<?php
-
-namespace model\\Trait;
-
-trait TraitTestInt
-{
-    protected function verifyInt ($testThis, $min = 0, $max = PHP_INT_MAX) : bool{
-        if ($testThis < $min || $testThis > $max) return false;
-        return true;
-    }
-}`;
+         namespace model\\Trait;
+         trait TraitTestInt
+         {
+             protected function verifyInt ($testThis, $min = 0, $max = PHP_INT_MAX) : bool{
+                 if ($testThis < $min || $testThis > $max) return false;
+                 return true;
+             }
+         }`;
 
                     fs.writeFileSync(`${projName}/model/Trait/TraitIntegerTest.php`, int);
 
                     const str = `<?php
-
-namespace model\\Trait;
-
-trait TraitStringTest
-{
-    protected function verifyString (?string $testThis) : bool {
-        if (empty($testThis)) return false;
-        return true;
-    }
-}`;
+                    namespace model\\Trait;
+                    trait TraitStringTest
+                    {
+                        protected function verifyString (?string $testThis) : bool {
+                            if (empty($testThis)) return false;
+                            return true;
+                        }
+                    }`;
 
                     fs.writeFileSync(`${projName}/model/Trait/TraitStringTest.php`, str);
 

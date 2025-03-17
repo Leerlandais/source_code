@@ -26,7 +26,7 @@ rl.question("Enter the project name : ", function(projName) {
 
                 try {
                     // Create all directories under the project name
-                    //    fs.mkdirSync(`${projName}`);
+                    fs.mkdirSync(`${projName}`);
                     fs.mkdirSync(`${projName}/controllers`);
                     fs.mkdirSync(`${projName}/data`);
                     fs.mkdirSync(`${projName}/model`);
@@ -85,8 +85,7 @@ rl.question("Enter the project name : ", function(projName) {
             `;
                     fs.writeFileSync(`${projName}/index.php`, extIndex);
 
-                    const gitIgnore = `
-.idea/
+                    const gitIgnore = `.idea/
 config.php
 .vscode/
 *.suo
@@ -235,33 +234,33 @@ pnpm-debug.log*
                     require_once PROJECT_DIRECTORY.'/vendor/autoload.php';
                     $loader = new FilesystemLoader(PROJECT_DIRECTORY.'/view/');
                     // Dev version
-                    // $twig = new Environment($loader, [
-                    //   'debug' => true,
-                    // ]);
-                    // $twig->addExtension(new \\Twig\\Extension\\DebugExtension());
-                    // /*
-                    // $twig->addGlobal('PUBLIC_DIR', PUB_DIR);
-                    // $twig->addGlobal('PROJECT_DIR', PROJECT_DIRECTORY);
-                    // */
-                    // /*
+                    $twig = new Environment($loader, [
+                      'debug' => true,
+                    ]);
+                    $twig->addExtension(new \\Twig\\Extension\\DebugExtension());
+                    
+                    $twig->addGlobal('PUBLIC_DIR', PUB_DIR);
+                    $twig->addGlobal('PROJECT_DIR', PROJECT_DIRECTORY);
+                   
+                   
                     // // Prod version
                     // $twig = new Environment($loader, [
                     //    'cache' => '../cache/Twig',
                     //    'debug' => false,
                     // ]);
                     // // no DebugExtension online
-                    // */
-                    // try {
-                    //    $db = MyPDO::getInstance(DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME . ";port=" . DB_PORT . ";charset=" . DB_CHARSET,
-                    //        DB_LOGIN,
-                    //        DB_PWD);
-                    //    $db->setAttribute(MyPDO::ATTR_ERRMODE, MyPDO::ERRMODE_EXCEPTION);
-                    //    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-                    // }catch (Exception $e){
-                    //    die($e->getMessage());
-                    // }
-                    // require_once PROJECT_DIRECTORY . '/Routing/Routes.php';
-                    //  $db = null;   
+                    
+                    try {
+                       $db = MyPDO::getInstance(DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME . ";port=" . DB_PORT . ";charset=" . DB_CHARSET,
+                           DB_LOGIN,
+                           DB_PWD);
+                       $db->setAttribute(MyPDO::ATTR_ERRMODE, MyPDO::ERRMODE_EXCEPTION);
+                       $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+                    }catch (Exception $e){
+                       die($e->getMessage());
+                    }
+                    require_once PROJECT_DIRECTORY . '/routing/Routes.php';
+                    $db = null;   
         `;
                     fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
 
@@ -551,8 +550,8 @@ abstract class AbstractController
                     process.chdir(`${projName}`);
                     execSync(`composer require "twig/twig:^3.0"`, {stdio: 'inherit'});
                     // add git and create the glory commit
-                    //  execSync(`git init`, {stdio: 'inherit'});
-                    //  execSync(`git branch -m main`, {stdio: 'inherit'});
+                    execSync(`git init`, {stdio: 'inherit'});
+                    execSync(`git branch -m main`, {stdio: 'inherit'});
                     execSync(`git add .`, {stdio: 'inherit'});
                     execSync(`git commit -m "Setup completed by Leerlandais"`, {stdio: 'inherit'});
                     if (gitRep) {
@@ -572,4 +571,4 @@ abstract class AbstractController
     });
 });
 
-// pkg Source/OdooCreator.js --targets node18-win-x64 --output ObjectProjMaker-V2.exe
+// pkg Source/OdooCreator.js --targets node18-win-x64 --output OdooCreator.exe

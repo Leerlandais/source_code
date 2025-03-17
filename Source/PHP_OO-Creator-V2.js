@@ -556,7 +556,7 @@ abstract class AbstractController
                     execSync(`git add .`, {stdio: 'inherit'});
                     execSync(`git commit -m "Setup completed by Leerlandais"`, {stdio: 'inherit'});
                     if (gitRep) {
-                        execSync(`git remote add origin ${gitRep}`, {stdio: "inherit"});
+                //        execSync(`git remote add origin ${gitRep}`, {stdio: "inherit"});
                         execSync('git push -u origin main', {stdio: "inherit"});
                     }
 

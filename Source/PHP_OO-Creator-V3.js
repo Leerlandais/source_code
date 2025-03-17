@@ -78,11 +78,10 @@ rl.question("Enter the project name : ", function(projName) {
                         `${projName}/view/public`
                     ]);
 
-                    const extIndex = `
-            <?php
-            header("Location: public");
-            die();
-            `;
+                    const extIndex = `<?php
+                    header("Location: public");
+                    die();
+                    `;
                     fs.writeFileSync(`${projName}/index.php`, extIndex);
 
                     const gitIgnore = `
@@ -138,70 +137,58 @@ pnpm-debug.log*
                 }
 
                 try {
-                    const rteCont = `
-<?php
+                    const rteCont = `<?php
 require_once PROJECT_DIRECTORY."/controller/publicController.php";
             `;
                     fs.writeFileSync(`${projName}/controller/routerController.php`, rteCont);
 
 
                     // and pubCount....
-                    const pubCont = `
-<?php
-$route = $_GET['route'] ?? 'home';
-switch ($route) {
-  case 'home':
-    echo $twig->render("public/public.index.html.twig");
-    break;
-
-  default:
-    echo $twig->render("err404.html.twig");
-}
-            `;
+                    const pubCont = `<?php
+                    $route = $_GET['route'] ?? 'home';
+                    switch ($route) {
+                      case 'home':
+                          echo $twig->render("public/public.index.html.twig");
+                              break;
+                                default:
+                                    echo $twig->render("err404.html.twig");
+                                    }
+                                                `;
                     fs.writeFileSync(`${projName}/controller/publicController.php`, pubCont);
 
                     // ...base.twig
-                    const baseTwig = `
-<\!DOCTYPE html>
-<html lang="{% block lang %}fr{% endblock %}">
-<head>
-    {% block head %}
-        {% block meta %}
-            <meta property="og:title" content="E-Commerce by Leerlandais">
-            <meta property="og:description" content="An E-Commerce site created with OO-PHP and Javascript">
-            <meta property="og:image" content="https://leerlandais.com/favicon.ico">
-            <meta property="og:url" content="https://leerlandais.com">
-            <meta property="og:type" content="website">
-        {% endblock %}
-        <title>{% block title %}Title{% endblock %}</title>
-        {% block stylesheet %}{% endblock %}
-    {% endblock %}
-</head>
-<body class={% block bodyClass %}{% endblock %}>{% block body %}
-
-{% block navBar %}
-    {% block connectBtn %} {% endblock %}
-{% endblock %}
-
-{% block content %}
-    {% block hero %}
-        {% block heroText %}{% endblock %}
-        {% block heroImg  %}{% endblock %}
-    {% endblock %}
-
-    {% block sectionOne %}{% endblock %} {# Change these names as needed #}
-    {% block sectionTwo %}{% endblock %}
-    {% block sectionThree %}{% endblock %}
-
-
-{% endblock %}
-
-{% block footer %}{% endblock %}
-
-{% block javascript %}{% endblock %}
-
-</body> {% endblock %}
-</html>`;
+                    const baseTwig = `<\!DOCTYPE html>
+                    <html lang="{% block lang %}fr{% endblock %}">
+                    <head>
+                    {% block head %}
+                    {% block meta %}
+                      <meta property="og:title" content="E-Commerce by Leerlandais">
+                      <meta property="og:description" content="An E-Commerce site created with OO-PHP and Javascript">
+                      <meta property="og:image" content="https://leerlandais.com/favicon.ico">
+                      <meta property="og:url" content="https://leerlandais.com">
+                      <meta property="og:type" content="website">
+                    {% endblock %}
+                      <title>{% block title %}Title{% endblock %}</title>
+                    {% block stylesheet %}{% endblock %}
+                    {% endblock %}
+                    </head>
+                    <body class={% block bodyClass %}{% endblock %}>{% block body %}
+                    {% block navBar %}
+                        {% block connectBtn %} {% endblock %}
+                        {% endblock %}
+                        {% block content %}
+                            {% block hero %}
+                              {% block heroText %}{% endblock %}
+                              {% block heroImg  %}{% endblock %}
+                            {% endblock %}
+                              {% block sectionOne %}{% endblock %} {# Change these names as needed #}
+                              {% block sectionTwo %}{% endblock %}
+                              {% block sectionThree %}{% endblock %}
+                    {% endblock %}
+                    {% block footer %}{% endblock %}
+                    {% block javascript %}{% endblock %}
+                    </body> {% endblock %}
+                    </html>`;
                     fs.writeFileSync(`${projName}/view/base.html.twig`, baseTwig);
 
                     // template.twig
@@ -221,73 +208,61 @@ switch ($route) {
                 }
 
                 try {
-                    const cfgFile = `
-    <?php
-const DB_DRIVER = "mysql";
-const DB_HOST = "localhost";
-const DB_LOGIN = "root";
-const DB_PWD = "";
-const DB_NAME = "${dbName}";
-const DB_PORT = ${dbPort};
-const DB_CHARSET = "utf8mb4";
-
-const PROJECT_DIRECTORY = __DIR__;
-const PUB_DIR = __DIR__ . '/public/';
-`;
+                    const cfgFile = `<?php
+                    const DB_DRIVER = "mysql";
+                    const DB_HOST = "localhost";
+                    const DB_LOGIN = "root";
+                    const DB_PWD = "";
+                    const DB_NAME = "${dbName}";
+                    const DB_PORT = ${dbPort};
+                    const DB_CHARSET = "utf8mb4";
+                    const PROJECT_DIRECTORY = __DIR__;
+                    const PUB_DIR = __DIR__ . '/public/';
+                    `;
 
                     fs.writeFileSync(`${projName}/config.php`, cfgFile);
 
 
-                    const pubIndex = `
-<?php
-use Twig\\Loader\\FilesystemLoader;
-use Twig\\Environment;
-use model\\MyPDO;
-
-require_once "../config.php";
-
-spl_autoload_register(function ($class) {
-  $class = str_replace('\\\\', '/', $class);
-  require PROJECT_DIRECTORY.'/' .$class . '.php';
-});
-
-require_once PROJECT_DIRECTORY.'/vendor/autoload.php';
-
-$loader = new FilesystemLoader(PROJECT_DIRECTORY.'/view/');
-
-// Dev version
-$twig = new Environment($loader, [
-  'debug' => true,
-]);
-$twig->addExtension(new \\Twig\\Extension\\DebugExtension());
-/*
-$twig->addGlobal('PUBLIC_DIR', PUB_DIR);
-$twig->addGlobal('PROJECT_DIR', PROJECT_DIRECTORY);
-*/
-/*
-// Prod version
-$twig = new Environment($loader, [
-   'cache' => '../cache/Twig',
-   'debug' => false,
-]);
-// no DebugExtension online
-*/
-
-
-try {
-   $db = MyPDO::getInstance(DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME . ";port=" . DB_PORT . ";charset=" . DB_CHARSET,
-       DB_LOGIN,
-       DB_PWD);
-   $db->setAttribute(MyPDO::ATTR_ERRMODE, MyPDO::ERRMODE_EXCEPTION);
-   $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-}catch (Exception $e){
-   die($e->getMessage());
-}
-
-require_once PROJECT_DIRECTORY.'/controller/routerController.php';
-
-// $db = null;   
-        `;
+                    const pubIndex = `<?php
+                    use Twig\\Loader\\FilesystemLoader;
+                    use Twig\\Environment;
+                    use model\\MyPDO;
+                    require_once "../config.php";
+                    spl_autoload_register(function ($class) {
+                      $class = str_replace('\\\\', '/', $class);
+                        require PROJECT_DIRECTORY.'/' .$class . '.php';
+                        });
+                        require_once PROJECT_DIRECTORY.'/vendor/autoload.php';
+                        $loader = new FilesystemLoader(PROJECT_DIRECTORY.'/view/');
+                        // Dev version
+                        $twig = new Environment($loader, [
+                          'debug' => true,
+                          ]);
+                          $twig->addExtension(new \\Twig\\Extension\\DebugExtension());
+                          /*
+                          $twig->addGlobal('PUBLIC_DIR', PUB_DIR);
+                          $twig->addGlobal('PROJECT_DIR', PROJECT_DIRECTORY);
+                          */
+                          /*
+                          // Prod version
+                          $twig = new Environment($loader, [
+                             'cache' => '../cache/Twig',
+                                'debug' => false,
+                                ]);
+                                // no DebugExtension online
+                                */
+                                try {
+                                   $db = MyPDO::getInstance(DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME . ";port=" . DB_PORT . ";charset=" . DB_CHARSET,
+                                          DB_LOGIN,
+                                                 DB_PWD);
+                                                    $db->setAttribute(MyPDO::ATTR_ERRMODE, MyPDO::ERRMODE_EXCEPTION);
+                                                       $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+                                                       }catch (Exception $e){
+                                                          die($e->getMessage());
+                                                          }
+                                                          require_once PROJECT_DIRECTORY.'/controller/routerController.php';
+                                                          // $db = null;   
+                                                                  `;
                     fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
 
                     const pdo = `<?php
@@ -514,4 +489,4 @@ trait TraitStringTest
     });
 });
 
-// pkg Source/PHP_OO-Creator.js --targets node18-win-x64 --output ObjectProjMaker.exe
+// pkg Source/PHP_OO-Creator-V3.js --targets node18-win-x64 --output ObjectProjMaker-V3.exe

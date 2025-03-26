@@ -565,4 +565,4 @@ abstract class AbstractController
     });
 });
 
-// pkg Source/OdooCreator.js --targets node18-win-x64 --output OdooCreator.exe
+// pkg Source/ultimate_MVC_Creator.js --targets node18-win-x64 --output Ultimate_MVC_Creator.exe

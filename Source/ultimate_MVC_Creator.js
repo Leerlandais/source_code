@@ -466,7 +466,12 @@ class RouteManager
 
         $controller = new $controllerClass($this->twig, $this->db);
 
-        $controller->$method();
+                $params = $_GET ?? [];
+        if (!empty($params)) {
+            $controller->$method($params);
+        } else {
+            $controller->$method(null);
+        }
     }
 }
 `

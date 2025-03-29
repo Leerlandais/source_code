@@ -200,8 +200,8 @@ const DB_NAME = "${dbName}";
 const DB_PORT = ${dbPort};
 const DB_CHARSET = "utf8mb4";
 const PROJECT_DIRECTORY = __DIR__;
-const PUB_DIR = __DIR__ . '/public/';
-const IMG_DIR = __DIR__ . '/public/images';
+const PUB_DIR = '/public/';
+const IMG_DIR = '/public/images';
 `;
 
                     fs.writeFileSync(`${projName}/config.php`, cfgFile);

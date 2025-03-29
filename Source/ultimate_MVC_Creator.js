@@ -499,7 +499,7 @@ namespace Controllers;
 
 class HomeController extends AbstractController{
 
-    public function index() {
+    public function index($getParams) {
     global $sessionRole, $errorMessage;
 
 

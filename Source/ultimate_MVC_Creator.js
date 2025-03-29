@@ -27,7 +27,7 @@ rl.question("Enter the project name : ", function(projName) {
                 try {
                     // Create all directories under the project name
                     fs.mkdirSync(`${projName}`);
-                    fs.mkdirSync(`${projName}/controllers`);
+                    fs.mkdirSync(`${projName}/Controllers`);
                     fs.mkdirSync(`${projName}/data`);
                     fs.mkdirSync(`${projName}/model`);
                     fs.mkdirSync(`${projName}/model/Abstract`);
@@ -42,7 +42,6 @@ rl.question("Enter the project name : ", function(projName) {
                     fs.mkdirSync(`${projName}/public/styles`);
                     fs.mkdirSync(`${projName}/view/private`);
                     fs.mkdirSync(`${projName}/view/public`);
-                    fs.mkdirSync(`${projName}/routing`);
 
                     function createReadmeInFolders(folders) {
                         folders.forEach(folder => {
@@ -61,7 +60,7 @@ rl.question("Enter the project name : ", function(projName) {
                     }
 
                     createReadmeInFolders([
-                        `${projName}/controllers`,
+                        `${projName}/Controllers`,
                         `${projName}/data`,
                         `${projName}/model`,
                         `${projName}/model/Abstract`,
@@ -75,8 +74,7 @@ rl.question("Enter the project name : ", function(projName) {
                         `${projName}/public/styles`,
                         `${projName}/view`,
                         `${projName}/view/private`,
-                        `${projName}/view/public`,
-                        `${projName}/routing`
+                        `${projName}/view/public`
                     ]);
 
                     const extIndex = `<?php
@@ -242,6 +240,7 @@ $twig->addExtension(new \\Twig\\Extension\\DebugExtension());
 
 $twig->addGlobal('PUB_DIR', PUB_DIR);
 $twig->addGlobal('PROJ_DIR', PROJECT_DIRECTORY);
+$twig->addGlobal('IMG_DIR', IMG_DIR);
 // // Prod version
 // $twig = new Environment($loader, [
 //    'cache' => '../cache/Twig',
@@ -258,7 +257,7 @@ try {
 }catch (Exception $e){
    die($e->getMessage());
 }
-require_once PROJECT_DIRECTORY . '/routing/Routes.php';
+require_once PROJECT_DIRECTORY . '/Controllers/RouteController.php';
 $db = null;`;
                     fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
 
@@ -429,12 +428,12 @@ trait TraitStringTest
                 try {
                     const router = `<?php
 
-namespace Routing;
+namespace model\\Manager;
 
 use model\\MyPDO;
 use Twig\\Environment;
 
-class Router
+class RouteManager
 {
     private array $routes = [];
     private Environment $twig;
@@ -471,14 +470,14 @@ class Router
     }
 }
 `
-                    fs.writeFileSync(`${projName}/routing/Router.php`, router);
+                    fs.writeFileSync(`${projName}/model/Manager/RouteManager.php`, router);
 
                     const routes = `<?php
-use Controllers\\HomeController;
+namespace Controllers;
+use    model\\Manager\\RouteManager;
 
-use Routing\\Router;
 
-$router = new Router($twig,$db);
+$router = new RouteManager($twig,$db);
 
 // Register routes
 $router->registerRoute('home', HomeController::class, 'index');
@@ -487,7 +486,7 @@ $router->registerRoute('home', HomeController::class, 'index');
 $route = $_GET['route'] ?? 'home'; // use the usual method to set the default page
 $router->handleRequest($route);`
 
-                    fs.writeFileSync(`${projName}/routing/Routes.php`, routes);
+                    fs.writeFileSync(`${projName}/Controllers/RouteController.php`, routes);
 
                     const homeCont = `<?php
 

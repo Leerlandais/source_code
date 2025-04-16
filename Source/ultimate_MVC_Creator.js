@@ -546,7 +546,17 @@ abstract class AbstractController
 
                 try {
                     process.chdir(`${projName}`);
-                    execSync(`composer require "twig/twig:^3.0"`, {stdio: 'inherit'});
+                    let composerAvailable = false;
+                    try {
+                        execSync('composer --version', { stdio: 'ignore' });
+                        composerAvailable = true;
+                    } catch {
+                        console.log('Composer not found. Skipping Twig installation.');
+                    }
+
+                    if (composerAvailable) {
+                        execSync(`composer require "twig/twig:^3.0"`, { stdio: 'inherit' });
+                    }
                     // add git and create the glory commit
                     execSync(`git init`, {stdio: 'inherit'});
                     execSync(`git branch -m main`, {stdio: 'inherit'});

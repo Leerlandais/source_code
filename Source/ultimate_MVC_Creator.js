@@ -521,19 +521,78 @@ namespace Controllers;
 
 use model\\MyPDO;
 use Twig\\Environment;
+use model\\Trait\\TraitLaundryRoom;
 
 // As with Manager and Mapping, the Controllers have lots of shared needs, so Abstract to keep it DRY
 
 abstract class AbstractController
 {
-    protected $twig;
+    use TraitLaundryRoom;
 
+    protected $twig;
     protected MyPDO $db;
+    protected string $csrfToken;
+
     public function __construct(Environment $twig, MyPDO $db)
     {
         $this->twig = $twig;
-
         $this->db = $db;
+        $this->csrfToken = $this->generateCsrfToken();
+    }
+
+    protected function generateCsrfToken(): string
+    {
+        $csrfToken = $_SESSION['csrf_token'] ?? null;
+        if(!isset($_SESSION['csrf_token'])) {
+            $csrfToken = $this->createNewCsrfToken();
+        }
+        return $_SESSION['csrf_token'];
+    }
+
+    protected function verifyCsrfToken($token): void
+    {
+        if (!isset($token) || $token !== $_SESSION['csrf_token']) {
+            die("Leave the tokens alone!!!");
+        }
+        unset($_SESSION["csrf_token"]);
+        $_SESSION['csrf_token'] = $this->generateCsrfToken();
+    }
+
+    protected function checkPermissions(string $level, ?string $role): void
+    {
+        if (!isset($role) || !$this->verifyUserLevel($level, $role)) {
+            $_SESSION = [];
+            // change this message if necessary
+            $_SESSION["systemMessage"] = "Vous n'êtes pas autorisé à accéder à cette page. Veuillez vous connecter.";
+            header("Location: ?route=home");
+            exit();
+        }
+    }
+
+    protected function runStandardSecurityCheck(): ?array
+    {
+        // change these settings as needed
+        $systemMessage = $_SESSION["systemMessage"] ?? null;
+        $userRole = $_SESSION["user"]['role'] ?? null;
+        $this->checkPermissions("ROLE_USER", $userRole);
+        return ["systemMessage" => $systemMessage,
+                "userRole" => $userRole];
+    }
+
+    private function verifyUserLevel(string $level, string $userLevel): bool
+    {
+        if (!$userLevel) return false;
+        if (!in_array($level, json_decode($userLevel))) return false;
+        return true;
+    }
+
+    private function createNewCsrfToken(): string
+    {
+        if(isset($_SESSION['csrf_token'])) {
+            unset($_SESSION['csrf_token']);
+        }
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        return $_SESSION['csrf_token'];
     }
 }
 `
@@ -579,4 +638,4 @@ abstract class AbstractController
     });
 });
 
-// pkg Source/ultimate_MVC_Creator.js --targets node18-win-x64 --output Ultimate_MVC_Creator.exe
+// pkg Source/ultimate_MVC_Creator.js --targets node18-win-x64 --output Ultimate_MVC_Creator2.exe

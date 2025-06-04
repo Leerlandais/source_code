@@ -506,6 +506,8 @@ $router->handleRequest($route);`
 
 namespace Controllers;
 
+use model\\Abstract\\AbstractController;
+
 class HomeController extends AbstractController{
 
     public function index($getParams) {
@@ -526,7 +528,7 @@ class HomeController extends AbstractController{
 
                     const absCont = `<?php
 
-namespace Controllers;
+namespace model\\Abstract;
 
 use model\\Manager\\ExceptionManager;
 use model\\MyPDO;
@@ -630,7 +632,7 @@ abstract class AbstractController
     }
 }
 `
-                    fs.writeFileSync(`${projName}/Controllers/AbstractController.php`, absCont);
+                    fs.writeFileSync(`${projName}/model/Abstract/AbstractController.php`, absCont);
 
                 } catch (error) {
                     console.log(`Error occurred: ${error.message}`);
@@ -697,4 +699,4 @@ class ExceptionManager extends AbstractManager
     });
 });
 
-// pkg Source/ultimate_MVC_Creator.js --targets node18-win-x64 --output Ultimate_MVC_Creator2.exe
+// pkg Source/new_ultimate_MVC.js --targets node18-win-x64 --output NEW_Ultimate_MVC_Creator.exe

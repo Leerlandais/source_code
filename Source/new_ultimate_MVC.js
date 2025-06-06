@@ -28,6 +28,7 @@ rl.question("Enter the project name : ", function(projName) {
                     // Create all directories under the project name
                     fs.mkdirSync(`${projName}`);
                     fs.mkdirSync(`${projName}/Controllers`);
+                    fs.mkdirSync(`${projName}/Controllers/Abstract`);
                     fs.mkdirSync(`${projName}/data`);
                     fs.mkdirSync(`${projName}/model`);
                     fs.mkdirSync(`${projName}/model/Abstract`);
@@ -506,7 +507,7 @@ $router->handleRequest($route);`
 
 namespace Controllers;
 
-use model\\Abstract\\AbstractController;
+use Controllers\\Abstract\\AbstractController;
 
 class HomeController extends AbstractController{
 
@@ -528,7 +529,7 @@ class HomeController extends AbstractController{
 
                     const absCont = `<?php
 
-namespace model\\Abstract;
+namespace Controllers\\Abstract;
 
 use model\\Manager\\ExceptionManager;
 use model\\MyPDO;
@@ -632,7 +633,7 @@ abstract class AbstractController
     }
 }
 `
-                    fs.writeFileSync(`${projName}/model/Abstract/AbstractController.php`, absCont);
+                    fs.writeFileSync(`${projName}/Controllers/Abstract/AbstractController.php`, absCont);
 
                 } catch (error) {
                     console.log(`Error occurred: ${error.message}`);

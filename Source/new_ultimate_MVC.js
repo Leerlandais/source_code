@@ -239,9 +239,6 @@ $twig = new Environment($loader, [
 ]);
 $twig->addExtension(new \\Twig\\Extension\\DebugExtension());
 
-$twig->addGlobal('PUB_DIR', PUB_DIR);
-$twig->addGlobal('PROJ_DIR', PROJECT_DIRECTORY);
-$twig->addGlobal('IMG_DIR', IMG_DIR);
 // // Prod version
 // $twig = new Environment($loader, [
 //    'cache' => '../cache/Twig',
@@ -249,15 +246,11 @@ $twig->addGlobal('IMG_DIR', IMG_DIR);
 // ]);
 // // no DebugExtension online
 
-try {
-   $db = MyPDO::getInstance(DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME . ";port=" . DB_PORT . ";charset=" . DB_CHARSET,
-       DB_LOGIN,
-       DB_PWD);
-   $db->setAttribute(MyPDO::ATTR_ERRMODE, MyPDO::ERRMODE_EXCEPTION);
-   $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-}catch (Exception $e){
-   die($e->getMessage());
-}
+$twig->addGlobal('PUB_DIR', PUB_DIR);
+$twig->addGlobal('PROJ_DIR', PROJECT_DIRECTORY);
+$twig->addGlobal('IMG_DIR', IMG_DIR);
+
+$db = \\Controllers\\DbConnectionController::DbConnection();
 require_once PROJECT_DIRECTORY . '/Controllers/RouteController.php';
 $db = null;`;
                     fs.writeFileSync(`${projName}/public/index.php`, pubIndex);
@@ -288,6 +281,32 @@ class MyPDO extends PDO
 }`;
                     fs.writeFileSync(`${projName}/model/MyPDO.php`, pdo);
 
+                    const DbConnection = `<?php
+
+namespace Controllers;
+
+use Exception;
+use model\\MyPDO;
+use PDO;
+
+class DbConnectionController extends Abstract\\AbstractController
+{
+ public static function dbConnection(): MyPDO
+ {
+     try {
+         $db = MyPDO::getInstance(DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME . ";port=" . DB_PORT . ";charset=" . DB_CHARSET,
+             DB_LOGIN,
+             DB_PWD);
+         $db->setAttribute(MyPDO::ATTR_ERRMODE, MyPDO::ERRMODE_EXCEPTION);
+         $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+     }catch (Exception $e){
+         $this->exceptionManager->handleExceptionInANiceWay($e->getCode(), $e->getMessage());
+     }
+     return $db;
+ }
+}`
+                    fs.writeFileSync(`${projName}/Controllers/DbConnectionController.php`, DbConnection);
+
                 } catch (error) {
                     console.log(`Error occurred: ${error.message}`);
                 }
@@ -309,6 +328,24 @@ abstract class AbstractManager
     {
         $this->db = $db;
         $this->twig = $twig;
+    }
+        public function insertAnything(array $data): bool
+    {
+        $columns = implode(", ", array_keys($data));
+        $placeholders = ":" . implode(", :", array_keys($data));
+        $stmt = $this->db->prepare("INSERT INTO \`DB_NAME\` ($columns) VALUES ($placeholders)");
+        $stmt->execute($data);
+        if ($stmt->rowCount() === 0) return false;
+        return true;
+
+    }
+        public function updateAnything(int $id, array $data): bool
+    {
+        $dataSet = implode(", ", array_map(fn($key) => "$key = :$key", array_keys($data)));
+        $stmt = $this->db->prepare("UPDATE \`DB_NAME\` SET $dataSet WHERE \`FIELD_ID_NAME\` = :id");
+        $stmt->execute(array_merge($data, ["id" => $id]));
+        if ($stmt->rowCount() === 0) return false;
+        return true;
     }
 }`;
                     fs.writeFileSync(`${projName}/model/Abstract/AbstractManager.php`, absMan);
@@ -700,4 +737,4 @@ class ExceptionManager extends AbstractManager
     });
 });
 
-// pkg Source/new_ultimate_MVC.js --targets node18-win-x64 --output NEW_Ultimate_MVC_Creator.exe
+// pkg Source/new_ultimate_MVC.js --targets node18-win-x64 --output NEWER_Ultimate_MVC_Creator.exe

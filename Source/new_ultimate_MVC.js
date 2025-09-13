@@ -153,7 +153,7 @@ pnpm-debug.log*
 {% block navBar %}
     {% block connectBtn %} {% endblock %}
 {% endblock %}
-
+{% block dumpZone %}{% endblock %}
 {% block content %}
     {% block hero %}
         {% block heroText %}{% endblock %}
